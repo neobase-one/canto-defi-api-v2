@@ -1,0 +1,342 @@
+// This is your Prisma schema file,
+// learn more about it in the docs https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model BlockSync {
+  // contract name
+  id String @id
+
+  // block till which its synced
+  blockSynced Int
+}
+
+model StableswapFactory {
+  // factory address
+  id String @id
+
+  // pair info
+  pairCount Int @default(0)
+
+  // total volume
+  totalVolumeUSD  Decimal @default(0)
+  totalVolumeETH  Decimal @default(0)
+
+  // untracked values - less confident USD scores
+  untrackedVolumeUSD Decimal @default(0)
+
+  // total liquidity
+  totalLiquidityUSD Decimal @default(0)
+  totalLiquidityETH Decimal @default(0)
+
+  // transactions
+  txCount BigInt @default(0)
+}
+
+model Token {
+  // token address
+  id String @id
+
+  // mirrored from the smart contract
+  symbol   String
+  name     String
+  decimals BigInt
+
+  // used for other stats like marketcap
+  totalSupply BigInt
+
+  // token specific volume
+  tradeVolume        Decimal @default(0)
+  tradeVolumeUSD     Decimal @default(0)
+  untrackedVolumeUSD Decimal @default(0)
+
+  // transactions across all pairs
+  txCount BigInt @default(0)
+
+  // liquidity across all pairs
+  totalLiquidity Decimal @default(0)
+
+  // derived prices
+  derivedETH Decimal @default(0)
+
+  // derived fields
+  tokenDayData     TokenDayData[]
+  pairDayDataBase  PairDayData[]  @relation("pairDayDataBase")
+  pairDayDataQuote PairDayData[]  @relation("pairDayDataQuote")
+  pairBase         Pair[]         @relation("pairBase")
+  pairQuote        Pair[]         @relation("pairQuote")
+}
+
+model Pair {
+  // pair address
+  id String @id
+
+  // mirrored from the smart contract
+  token0      Token   @relation("pairBase", fields: [token0Id], references: [id])
+  token0Id    String
+  token1      Token   @relation("pairQuote", fields: [token1Id], references: [id])
+  token1Id    String
+  reserve0    Decimal @default(0)
+  reserve1    Decimal @default(0)
+  totalSupply Decimal @default(0)
+
+  // derived liquidity
+  reserveETH Decimal @default(0)
+  reserveUSD Decimal @default(0)
+
+  // used for separating per pair reserves and global
+  trackedReserveETH Decimal @default(0)
+
+  // Price in terms of the asset pair
+  token0Price Decimal @default(0)
+  token1Price Decimal @default(0)
+
+  // lifetime volume stats
+  volumeToken0       Decimal @default(0)
+  volumeToken1       Decimal @default(0)
+  volumeUSD          Decimal @default(0)
+  untrackedVolumeUSD Decimal @default(0)
+  txCount            BigInt @default(0)
+
+  // creation stats
+  createdAtTimestamp   BigInt
+  createdAtBlockNumber BigInt
+
+  // Fields used to help derived relationship
+  liquidityProviderCount BigInt @default(0) // used to detect new exchanges
+
+  // derived fields
+  pairHourData               PairHourData[]
+  liquidityPositions         LiquidityPosition[]
+  liquidityPositionSnapshots LiquidityPositionSnapshot[]
+  mints                      Mint[]
+  burns                      Burn[]
+  swaps                      Swap[]
+}
+
+model User {
+  id                        String                      @id
+  liquidityPositions        LiquidityPosition[]
+  LiquidityPositionSnapshot LiquidityPositionSnapshot[]
+  usdSwapped                Decimal
+}
+
+model LiquidityPosition {
+  id                        String                      @id
+  user                      User                        @relation(fields: [userId], references: [id])
+  userId                    String
+  pair                      Pair                        @relation(fields: [pairId], references: [id])
+  pairId                    String
+  liquidityTokenBalance     Decimal
+  LiquidityPositionSnapshot LiquidityPositionSnapshot[]
+}
+
+// saved over time for return calculations, gets created and never updated
+model LiquidityPositionSnapshot {
+  id                        String            @id
+  liquidityPosition         LiquidityPosition @relation(fields: [liquidityPositionId], references: [id])
+  timestamp                 Int // saved for fast historical lookups
+  block                     Int // saved for fast historical lookups
+  user                      User              @relation(fields: [userId], references: [id])
+  userId                    String /// reference to user
+  pair                      Pair              @relation(fields: [pairId], references: [id])
+  pairId                    String // reference to pair
+  token0PriceUSD            Decimal // snapshot of token0 price
+  token1PriceUSD            Decimal // snapshot of token1 price
+  reserve0                  Decimal // snapshot of pair token0 reserves
+  reserve1                  Decimal // snapshot of pair token1 reserves
+  reserveUSD                Decimal // snapshot of pair reserves in USD
+  liquidityTokenTotalSupply Decimal // snapshot of pool token supply
+  liquidityTokenBalance     Decimal // snapshot of users pool token balance
+  liquidityPositionId       String
+}
+
+model Transaction {
+  id          String @id // txn hash
+  blockNumber BigInt
+  timestamp   BigInt
+  // This is not the reverse of Mint.transaction; it is only used to
+  // track incomplete mints (similar for burns and swaps)
+  mints       Mint[]
+  burns       Burn[]
+  swaps       Swap[]
+}
+
+model Mint {
+  // transaction hash + "-" + index in mints Transaction array
+  id            String      @id
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  transactionId String
+  timestamp     BigInt // need this to pull recent txns for specific token or pair
+  pair          Pair        @relation(fields: [pairId], references: [id])
+  pairId        String
+
+  // populated from the primary Transfer event
+  to        Bytes
+  liquidity Decimal
+
+  // populated from the Mint event
+  sender    Bytes?
+  amount0   Decimal?
+  amount1   Decimal?
+  logIndex  BigInt?
+  // derived amount based on available prices of tokens
+  amountUSD Decimal?
+
+  // optional fee fields, if a Transfer event is fired in _mintFee
+  feeTo        Bytes?
+  feeLiquidity Decimal?
+}
+
+model Burn {
+  // transaction hash + "-" + index in mints Transaction array
+  id            String      @id
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  transactionId String
+  timestamp     BigInt // need this to pull recent txns for specific token or pair
+  pair          Pair        @relation(fields: [pairId], references: [id])
+  pairId        String
+
+  // populated from the primary Transfer event
+  liquidity Decimal
+
+  // populated from the Burn event
+  sender    Bytes?
+  amount0   Decimal?
+  amount1   Decimal?
+  to        Bytes?
+  logIndex  BigInt?
+  // derived amount based on available prices of tokens
+  amountUSD Decimal?
+
+  // mark uncomplete in ETH case
+  needsComplete Boolean
+
+  // optional fee fields, if a Transfer event is fired in _mintFee
+  feeTo        Bytes?
+  feeLiquidity Decimal?
+}
+
+model Swap {
+  // transaction hash + "-" + index in swaps Transaction array
+  id            String      @id
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  transactionId String
+  timestamp     BigInt // need this to pull recent txns for specific token or pair
+  pair          Pair        @relation(fields: [pairId], references: [id])
+  pairId        String
+
+  // populated from the Swap event
+  sender     Bytes
+  from       Bytes // the EOA that initiated the txn
+  amount0In  Decimal
+  amount1In  Decimal
+  amount0Out Decimal
+  amount1Out Decimal
+  to         Bytes
+  logIndex   BigInt?
+
+  // derived info
+  amountUSD Decimal
+}
+
+// stores for USD calculations
+model Bundle {
+  id       String  @id
+  ethPrice Decimal @default(0)// price of ETH usd 
+}
+
+// Data accumulated and condensed into day stats for all of Uniswap
+model UniswapDayData {
+  id   String @id // timestamp rounded to current day by dividing by 86400
+  date Int
+
+  dailyVolumeETH       Decimal
+  dailyVolumeUSD       Decimal
+  dailyVolumeUntracked Decimal
+
+  totalVolumeETH    Decimal
+  totalLiquidityETH Decimal
+  totalVolumeUSD    Decimal // Accumulate at each trade, not just calculated off whatever totalVolume is. making it more accurate as it is a live conversion
+  totalLiquidityUSD Decimal
+
+  txCount BigInt
+}
+
+model PairHourData {
+  id            String @id
+  hourStartUnix Int // unix timestamp for start of hour
+  pair          Pair   @relation(fields: [pairId], references: [id])
+  pairId        String
+
+  // reserves
+  reserve0 Decimal
+  reserve1 Decimal
+
+  // total supply for LP historical returns
+  totalSupply Decimal
+
+  // derived liquidity
+  reserveUSD Decimal
+
+  // volume stats
+  hourlyVolumeToken0 Decimal
+  hourlyVolumeToken1 Decimal
+  hourlyVolumeUSD    Decimal
+  hourlyTxns         BigInt
+}
+
+// Data accumulated and condensed into day stats for each exchange
+model PairDayData {
+  id          String @id
+  date        Int
+  pairAddress Bytes
+  token0      Token  @relation("pairDayDataBase", fields: [token0Id], references: [id])
+  token0Id    String
+  token1      Token  @relation("pairDayDataQuote", fields: [token1Id], references: [id])
+  token1Id    String
+
+  // reserves
+  reserve0 Decimal
+  reserve1 Decimal
+
+  // total supply for LP historical returns
+  totalSupply Decimal
+
+  // derived liquidity
+  reserveUSD Decimal
+
+  // volume stats
+  dailyVolumeToken0 Decimal
+  dailyVolumeToken1 Decimal
+  dailyVolumeUSD    Decimal
+  dailyTxns         BigInt
+}
+
+model TokenDayData {
+  id      String @id
+  date    Int
+  token   Token  @relation(fields: [tokenId], references: [id])
+  tokenId String
+
+  // volume stats
+  dailyVolumeToken Decimal
+  dailyVolumeETH   Decimal
+  dailyVolumeUSD   Decimal
+  dailyTxns        BigInt
+
+  // liquidity stats
+  totalLiquidityToken Decimal
+  totalLiquidityETH   Decimal
+  totalLiquidityUSD   Decimal
+
+  // price stats
+  priceUSD Decimal
+}
