@@ -18,7 +18,7 @@ export async function parsePairEvents() {
         toBlock:
           "0x" + (bs.blockSynced + config.canto.blockLookupWindow).toString(16),
         topics: [Object.values(config.canto.contracts.baseV1Pair.topics)],
-        addresses: config.canto.contracts.baseV1Pair.addresses
+        addresses: config.canto.contracts.baseV1Pair.addresses,
       },
     ]);
 

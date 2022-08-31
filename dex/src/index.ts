@@ -1,5 +1,5 @@
-import { parseFactoryEvents } from "./parsers/factory";
-import { parsePairEvents } from "./parsers/pair";
+import { parseFactoryEvents } from "./indexers/factory";
+import { parsePairEvents } from "./indexers/pair";
 import prisma from "./prisma";
 import config from "./config";
 
