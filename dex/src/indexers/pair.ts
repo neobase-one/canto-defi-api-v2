@@ -2,39 +2,47 @@ import { ethers } from "ethers";
 import prisma from "../prisma";
 import provider from "../provider";
 import config from "../config";
+import { handleBurn, handleMint, handleSwap, handleSync, handleTransfer } from "../eventHandlers/pair";
 
 export async function parsePairEvents() {
-  console.log("inside PAIR parser");
-
   while (1) {
     const bs = await prisma.blockSync.findUniqueOrThrow({
       where: { id: "BaseV1Pair" },
       select: { blockSynced: true },
     });
-
     const logs = await provider.send("eth_getLogs", [
       {
         fromBlock: "0x" + bs.blockSynced.toString(16),
         toBlock:
-          "0x" + (bs.blockSynced + config.canto.blockLookupWindow).toString(16),
+        "0x" + (bs.blockSynced + config.canto.blockLookupWindow).toString(16),
         topics: [Object.values(config.canto.contracts.baseV1Pair.topics)],
-        addresses: config.canto.contracts.baseV1Pair.addresses,
+        address: config.canto.contracts.baseV1Pair.addresses
       },
     ]);
+    
+    for (let log of logs) {
+      switch(log.topics[0]) {
+        case config.canto.contracts.baseV1Pair.topics["Mint"]: {await handleMint(log); break;} 
+        case config.canto.contracts.baseV1Pair.topics["Burn"]: {await handleBurn(log); break;} 
+        case config.canto.contracts.baseV1Pair.topics["Swap"]: {await handleSwap(log); break;} 
+        case config.canto.contracts.baseV1Pair.topics["Sync"]: {await handleSync(log); break;} 
+        case config.canto.contracts.baseV1Pair.topics["Transfer"]: {await handleTransfer(log); break;} 
+      }
+    }
 
-    const contract = new ethers.Contract(
-      config.canto.contracts.baseV1Pair.addresses[0],
-      config.canto.contracts.baseV1Pair.abi,
-      provider.getSigner(0)
-    );
+    const liveBlock = await provider.getBlockNumber();
+    if (liveBlock < bs.blockSynced + config.canto.blockLookupWindow) {
+      await prisma.blockSync.update({
+        where: { id: "BaseV1Pair" },
+        data: { blockSynced: liveBlock },
+      });
+      break;
+    }
 
     await prisma.blockSync.update({
       where: { id: "BaseV1Pair" },
       data: { blockSynced: bs.blockSynced + config.canto.blockLookupWindow },
     });
-    console.log("pair bs:", bs.blockSynced, logs.length);
   }
-  //   for (let log of logs) {
-  // console.log(contract.interface.parseLog(log))
-  //   }
+  console.log("sync complete: BaseV1Pair");
 }

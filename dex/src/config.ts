@@ -20,7 +20,7 @@ const config = {
   // canto
   canto: {
     blockTime: 5, // in seconds
-    blockLookupWindow: 10000,
+    blockLookupWindow: 1000,
 
     contracts: {
       baseV1Factory: {
