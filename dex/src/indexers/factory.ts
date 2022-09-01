@@ -16,16 +16,13 @@ export async function parseFactoryEvents() {
         toBlock:
           "0x" + (bs.blockSynced + config.canto.blockLookupWindow).toString(16),
         topics: [Object.values(config.canto.contracts.baseV1Factory.topics)],
+        address: config.canto.contracts.baseV1Factory.addresses
       },
     ]);
-
     for (let log of logs) {
-      if (
-        log.topics[0] ==
-        config.canto.contracts.baseV1Factory.topics["PairCreated"]
-      )
-        await handlePairCreated(log);
-
+      switch(log.topics[0]) {
+        case config.canto.contracts.baseV1Factory.topics["PairCreated"]: {await handlePairCreated(log); break;} 
+      }
       console.log("parsed", log.transactionHash);
     }
 
