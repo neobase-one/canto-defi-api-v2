@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model BlockSyncLending {
+  // contract name
+  id String @id
+
+  // block till which its synced
+  blockSynced Int
+}
+
+model Account {
+  //account address
+  id                    String   @id
+  //list of tokens held by account
+  tokens                String[]
+  countLiquidated       Decimal
+  liquidityTokenBalance Decimal
+  countLiquidator       Decimal
+  hasBorrowed           Boolean
+}
+
+model AccountCToken {
+  //account address
+  id                      String    @id
+  market                  String
+  symbol                  String
+  account                 String
+  transactionHashes       String[]
+  transactionTimes        Decimal[]
+  accrualBlockNumber      Decimal
+  enteredMarket           Boolean
+  cTokenBalance           Decimal
+  totalUnderlyingSupplied Decimal
+  totalUnderlyingRedeemed Decimal
+  accountBorrowIndex      Decimal
+  totalUnderlyingBorrowed Decimal
+  totalUnderlyingRepaid   Decimal
+  storedBorrowBalance     Decimal
+}
+
+model Comptroller {
+  //account address
+  id                   String  @id
+  //oracle address
+  priceOracle          String
+  closeFactor          Decimal
+  liquidationIncentive Decimal
+  maxAssets            Decimal
+}
+
+model Market {
+  //account address
+  id                       String  @id
+  // market fields
+  name                     String
+  symbol                   String
+  accrualBlockNumber       Decimal
+  totalSupply              Decimal
+  exchangeRate             Decimal
+  totalReserves            Decimal
+  totalCash                Decimal
+  totalDeposits            Decimal
+  totalBorrows             Decimal
+  perBlockBorrowInterest   Decimal
+  perBlockSupplyInterest   Decimal
+  borrowIndex              Decimal
+  tokenPerEthRatio         Decimal
+  tokenPerUSDRatio         Decimal
+  borrowRate               Decimal
+  cash                     Decimal
+  collateralFactor         Decimal
+  interestRateModelAddress String
+  numberOfBorrowers        Decimal
+  numberOfSuppliers        Decimal
+  reserves                 Decimal
+  supplyRate               Decimal
+  underlyingAddress        String
+  underlyingName           String
+  underlyingPrice          Decimal
+  underlyingSymbol         String
+  blockTimestamp           Decimal
+  reserveFactor            Decimal
+  underlyingPriceUSD       Decimal
+  underlyingDecimals       Decimal
+}
