@@ -24,7 +24,7 @@ const config = {
 
     contracts: {
       comptroller: {
-        addresses: [], 
+        addresses: [],
         abi: ComptrollerABI,
         interface: new ethers.utils.Interface(ComptrollerABI),
         startBlock: 85427,
@@ -54,7 +54,7 @@ const config = {
       },
       cToken: {
         addresses: [
-          
+
         ],
         abi: CTokenABI,
         interface: new ethers.utils.Interface(CTokenABI),
