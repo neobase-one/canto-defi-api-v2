@@ -10,6 +10,7 @@ Indexer + GraphQL API for Canto Dex and Lending contracts
 nvm install 16.0
 nvm use 16.0
 ```
+__NOTE__: `16.10` for api-gateway
 
 ### DB
 
