@@ -2,8 +2,11 @@
   "name": "lending",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.ts",
   "scripts": {
+    "build": "rimraf ./build && tsc",
+    "start": "node build/src/index.js",
+    "redo": "rimraf ./build && tsc && node build/src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -19,6 +22,7 @@
     "@prisma/client": "^4.3.0",
     "decimal.js": "^10.4.0",
     "dotenv": "^16.0.2",
-    "ethers": "^5.7.0"
+    "ethers": "^5.7.0",
+    "rimraf": "^3.0.2"
   }
 }

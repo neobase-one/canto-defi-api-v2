@@ -1,5 +1,5 @@
 import prisma from "./prisma";
-import config from "./config";
+import { Config } from "./config";
 import { indexComptrollerEvents } from "./indexers/comptoller";
 import { indexCTokenEvents } from "./indexers/ctoken"
 
@@ -11,7 +11,7 @@ async function init() {
     update: {},
     create: {
       id: "Comptroller",
-      blockSynced: config.canto.contracts.comptroller.startBlock,
+      blockSynced: Config.canto.contracts.comptroller.startBlock,
     },
   });
 
@@ -22,7 +22,7 @@ async function init() {
     update: {},
     create: {
       id: "CToken",
-      blockSynced: config.canto.contracts.cToken.startBlock,
+      blockSynced: Config.canto.contracts.cToken.startBlock,
     },
   });
 }
