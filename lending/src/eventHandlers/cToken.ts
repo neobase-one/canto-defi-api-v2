@@ -1,10 +1,8 @@
 import prisma from "../prisma";
 import { Config } from "../config";
-import { getTimestamp, updateMarket } from "../utils/helper";
-import { brotliCompress } from "zlib";
+import { createMarket, getTimestamp, updateMarket } from "../utils/helper";
 import { cTOKEN_DECIMALS, cTOKEN_DECIMALS_PD, ONE_PD, ZERO_PD } from "../utils/consts";
 import { Prisma } from "@prisma/client";
-import { time } from "console";
 
 export async function handleBorrow(log: any) {
   console.log("cToken", "Borrow", parseInt(log.blockNumber, 16), log.transactionHash);
@@ -404,7 +402,16 @@ export async function handleNewMarketInterestRateModel(log: any) {
 	let marketId = log.address;
 	let newInterestRateModel = event.args.newInterestRateModel;
 
-	// todo: mods: removed create
+	let market = await prisma.market.findUnique({
+    where: {
+      id: marketId
+    }
+  });
+
+  if (market == null) {
+    await createMarket(marketId);
+  }
+
 	await prisma.market.update({
 		where: {
 			id: marketId
