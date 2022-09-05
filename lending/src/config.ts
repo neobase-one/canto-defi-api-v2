@@ -93,6 +93,9 @@ export const Config = {
           NewMarketInterestRateModel: ethers.utils.id("NewMarketInterestRateModel(address,address)")
         },
       },
+      baseV1Router: {
+        addresses: ["0x8fa61F21Fb514d2914a48B29810900Da876E295b"]
+      }
     },
   },
 };

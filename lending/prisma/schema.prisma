@@ -22,11 +22,11 @@ model Account {
   //account address
   id                    String   @id
   //list of tokens held by account
-  tokens                String[]
-  countLiquidated       Decimal
-  liquidityTokenBalance Decimal
-  countLiquidator       Decimal
-  hasBorrowed           Boolean
+  tokens                String[] @default([])
+  countLiquidated       Decimal  @default(0)
+  liquidityTokenBalance Decimal  @default(0)
+  countLiquidator       Decimal  @default(0)
+  hasBorrowed           Boolean  @default(false)
 }
 
 model AccountCToken {

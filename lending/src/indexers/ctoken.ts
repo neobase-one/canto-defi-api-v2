@@ -27,6 +27,7 @@ export async function indexCTokenEvents() {
       },
     ]);
 
+    console.log(bs.blockSynced, logs.length)
     for (let log of logs) {
       switch (log.topics[0]) {
         case Config.canto.contracts.cToken.topics.Borrow: {
