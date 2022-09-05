@@ -12,7 +12,7 @@ import prisma from "../prisma";
 import provider from "../provider";
 
 export async function indexCTokenEvents() {
-  while (1) {
+  // while (1) {
     const bs = await prisma.blockSyncLending.findUniqueOrThrow({
       where: { id: "CToken" },
       select: { blockSynced: true },
@@ -61,19 +61,19 @@ export async function indexCTokenEvents() {
       }
     }
 
-    const liveBlock = await provider.getBlockNumber();
-    if (liveBlock < bs.blockSynced + Config.canto.blockLookupWindow) {
-      await prisma.blockSyncLending.update({
-        where: { id: "CToken" },
-        data: { blockSynced: liveBlock },
-      });
-      break;
-    }
+    // const liveBlock = await provider.getBlockNumber();
+    // if (liveBlock < bs.blockSynced + Config.canto.blockLookupWindow) {
+    //   await prisma.blockSyncLending.update({
+    //     where: { id: "CToken" },
+    //     data: { blockSynced: liveBlock },
+    //   });
+    //   break;
+    // }
 
     await prisma.blockSyncLending.update({
       where: { id: "CToken" },
       data: { blockSynced: bs.blockSynced + Config.canto.blockLookupWindow },
     });
-  }
-  console.log("sync complete: CToken");
+  // }
+  // console.log("sync complete: CToken");
 }

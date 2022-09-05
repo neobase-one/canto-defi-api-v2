@@ -1,7 +1,6 @@
 import prisma from "./prisma";
 import { Config } from "./config";
-import { indexComptrollerEvents } from "./indexers/comptoller";
-import { indexCTokenEvents } from "./indexers/ctoken"
+import { indexChain } from "./indexers";
 
 async function init() {
   await prisma.blockSyncLending.upsert({
@@ -30,8 +29,7 @@ async function init() {
 async function main() {
   await init();
   console.log("setup completed, parsing now...\n");
-  await indexComptrollerEvents()
-  await indexCTokenEvents();
+  await indexChain()
 }
 
 main();
