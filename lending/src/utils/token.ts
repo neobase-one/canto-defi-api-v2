@@ -3,6 +3,7 @@ import ERC20ABI from "../../abis/ERC20.json";
 import { ethers } from "ethers";
 import provider from "../provider";
 import { ADDRESS_ZERO } from "./consts";
+import { Config } from "../config";
 
 export async function fetchTokenName (tokenAddress: string) {
   return fetchTokenSymbol(tokenAddress);
@@ -12,6 +13,10 @@ export async function fetchTokenSymbol(tokenAddress: string) {
   if (tokenAddress == ADDRESS_ZERO) {
     // default: canto
     return "CANTO";
+  }
+
+  if (tokenAddress == Config.canto.lendingDashboard.cW_CANTO_ADDRESS) {
+    return "cwCANTO";
   }
 
   // static definitions overrides

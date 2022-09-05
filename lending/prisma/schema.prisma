@@ -35,17 +35,17 @@ model AccountCToken {
   market                  String
   symbol                  String
   account                 String
-  transactionHashes       String[]
-  transactionTimes        Decimal[]
-  accrualBlockNumber      Decimal
-  enteredMarket           Boolean
-  cTokenBalance           Decimal
-  totalUnderlyingSupplied Decimal
-  totalUnderlyingRedeemed Decimal
-  accountBorrowIndex      Decimal
-  totalUnderlyingBorrowed Decimal
-  totalUnderlyingRepaid   Decimal
-  storedBorrowBalance     Decimal
+  transactionHashes       String[]  @default([])
+  transactionTimes        Decimal[] @default([])
+  accrualBlockNumber      Decimal   @default(0)
+  enteredMarket           Boolean   @default(false)
+  cTokenBalance           Decimal   @default(0)
+  totalUnderlyingSupplied Decimal   @default(0)
+  totalUnderlyingRedeemed Decimal   @default(0)
+  accountBorrowIndex      Decimal   @default(0)
+  totalUnderlyingBorrowed Decimal   @default(0)
+  totalUnderlyingRepaid   Decimal   @default(0)
+  storedBorrowBalance     Decimal   @default(0)
 }
 
 model Comptroller {
@@ -53,9 +53,9 @@ model Comptroller {
   id                   String  @id
   //oracle address
   priceOracle          String
-  closeFactor          Decimal
-  liquidationIncentive Decimal
-  maxAssets            Decimal
+  closeFactor          Decimal @default(0)
+  liquidationIncentive Decimal @default(0)
+  maxAssets            Decimal @default(0)
 }
 
 model Market {
