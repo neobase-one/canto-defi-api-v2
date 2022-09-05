@@ -1,9 +1,21 @@
+import prisma from "../prisma";
 import { Config } from "../config";
+import { createMarket } from "../utils/helper";
 
 export async function handleMarketListed(log: any) {
   const event = Config.canto.contracts.comptroller.interface.parseLog(log);
-  console.log(event);
-  //TODO : Function Implementation
+  let address = event.args.cToken;
+  console.log(event, address);
+
+  let market = await createMarket(address);
+  await prisma.market.upsert({
+    where: {
+      id: address
+    },
+    update: {},
+    create: market
+  });
+
 }
 
 export async function handleMarketEntered(log: any) {

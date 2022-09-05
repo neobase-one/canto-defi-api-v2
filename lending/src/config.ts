@@ -26,6 +26,7 @@ export const Config = {
       USDC_ADDRESS: "0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd",
       cUSDC_ADDRESS: "0x0dD6241bFE519fB1c1B654877b66311c355804c5",
       cETH_ADDRESS: "0x830b9849E7D79B92408a86A557e7baAACBeC6030",
+      cCANTO_ADDRESS: "0xB65Ec550ff356EcA6150F733bA9B954b2e0Ca488",
       MANTISSA_FACTOR: 18,
       cTOKEN_DECIMALS: 8
     },
@@ -61,12 +62,19 @@ export const Config = {
       },
       cToken: {
         addresses: [
-          "0xEe602429Ef7eCe0a13e4FfE8dBC16e101049504C", // cNoteDelegator
-          "0x0dD6241bFE519fB1c1B654877b66311c355804c5", // cUsdcDelegator
-          "0xD7Ff6Ba11422D47Aeff3DAE08CC1Ff5F30975D80", // cUsdtDelegator
-          "0x732Dcd6021fE992a935a26A6C5861312f0cBE5B2", // cAtomDelegator
+          // erc20 cToken
+          "0xEe602429Ef7eCe0a13e4FfE8dBC16e101049504C", // cNoteDelegator // todo: no MarketListed event
+          "0xdE59F060D7ee2b612E7360E6C1B97c4d8289Ca2e", // cUsdcDelegator
+          "0x6b46ba92d7e94FfA658698764f5b8dfD537315A9", // cUsdtDelegator
+          "0x617383F201076e7cE0f6E625D1a983b3D1bd277A", // cAtomDelegator
           "0x830b9849E7D79B92408a86A557e7baAACBeC6030", // cEthDelegator
           "0xB65Ec550ff356EcA6150F733bA9B954b2e0Ca488", // cCanto
+          // LP cToken
+          "0x3C96dCfd875253A37acB3D2B102b6f328349b16B", // cCanto/Note
+          "0xb49A395B39A0b410675406bEE7bD06330CB503E3", // cCanto/Eth
+          "0xC0D6574b2fe71eED8Cd305df0DA2323237322557", // cCanto/Atom
+          "0xD6a97e43FC885A83E97d599796458A331E580800", // cNote/Usdc
+          "0xf0cd6b5cE8A01D1B81F1d8B76643866c5816b49F", // cNote/Usdt
         ],
         startBlock: 224994,
         abi: CTokenABI,

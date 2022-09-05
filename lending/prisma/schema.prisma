@@ -64,32 +64,32 @@ model Market {
   // market fields
   name                     String
   symbol                   String
-  accrualBlockNumber       Decimal
-  totalSupply              Decimal
-  exchangeRate             Decimal
-  totalReserves            Decimal
-  totalCash                Decimal
-  totalDeposits            Decimal
-  totalBorrows             Decimal
-  perBlockBorrowInterest   Decimal
-  perBlockSupplyInterest   Decimal
-  borrowIndex              Decimal
-  tokenPerEthRatio         Decimal
-  tokenPerUSDRatio         Decimal
-  borrowRate               Decimal
-  cash                     Decimal
-  collateralFactor         Decimal
-  interestRateModelAddress String
-  numberOfBorrowers        Decimal
-  numberOfSuppliers        Decimal
-  reserves                 Decimal
-  supplyRate               Decimal
-  underlyingAddress        String
+  accrualBlockNumber       Decimal @default(0)
+  totalSupply              Decimal @default(0)
+  exchangeRate             Decimal @default(0)
+  totalReserves            Decimal @default(0)
+  totalCash                Decimal @default(0)
+  totalDeposits            Decimal @default(0)
+  totalBorrows             Decimal @default(0)
+  perBlockBorrowInterest   Decimal @default(0)
+  perBlockSupplyInterest   Decimal @default(0)
+  borrowIndex              Decimal @default(0)
+  tokenPerEthRatio         Decimal @default(0)
+  tokenPerUSDRatio         Decimal @default(0)
+  borrowRate               Decimal @default(0)
+  cash                     Decimal @default(0)
+  collateralFactor         Decimal @default(0)
+  interestRateModelAddress String  @default("0x0000000000000000000000000000000000000000")
+  numberOfBorrowers        Decimal @default(0)
+  numberOfSuppliers        Decimal @default(0)
+  reserves                 Decimal @default(0)
+  supplyRate               Decimal @default(0)
+  underlyingAddress        String  @default("0x0000000000000000000000000000000000000000")
   underlyingName           String
-  underlyingPrice          Decimal
+  underlyingPrice          Decimal @default(0)
   underlyingSymbol         String
-  blockTimestamp           Decimal
-  reserveFactor            Decimal
-  underlyingPriceUSD       Decimal
-  underlyingDecimals       Decimal
+  blockTimestamp           Decimal @default(0)
+  reserveFactor            Decimal @default(0)
+  underlyingPriceUSD       Decimal @default(0)
+  underlyingDecimals       Decimal @default(0)
 }
