@@ -67,7 +67,7 @@ export async function createMarket(marketAddress: string) {
 
 export async function updateMarket(
   marketId: string,
-  blockNumber: number,
+  blockNumber: Prisma.Decimal,
   blockTimestamp: number
 ) {
   let market = await prisma.market.findUnique({
@@ -200,7 +200,7 @@ function exponentToPD(exp: number) {
 
 // todo
 async function getTokenPrice(
-  blockNumber: number,
+  blockNumber: Prisma.Decimal,
   eventAddress: string,
   underlyingAddress: string,
   underlyingDecimals: number
@@ -226,7 +226,7 @@ async function getTokenPrice(
   return underlyingPrice;
 }
 
-async function getUSDCPrice(blockNumber: number) {
+async function getUSDCPrice(blockNumber: Prisma.Decimal) {
   let comptroller = await prisma.comptroller.findUnique({
     where: {
       id: "1"
@@ -264,8 +264,8 @@ async function getUnderlyingAddress(cTokenAddress: string): Promise<string> {
   }
 }
 
-export async function getTimestamp(blockNumber: number) {
-  let block = await provider.getBlock(blockNumber);
+export async function getTimestamp(blockNumber: Prisma.Decimal) {
+  let block = await provider.getBlock(blockNumber.toNumber());
   return block.timestamp;
 }
 
@@ -275,7 +275,7 @@ export async function updateCommonCTokenStats(
   accountId: string,
   txHash: string,
   timestamp: number,
-  blockNumber: number,
+  blockNumber: Prisma.Decimal,
   enteredMarket: boolean
 ) {
   let cTokenStatId = marketId.concat("-").concat(accountId);

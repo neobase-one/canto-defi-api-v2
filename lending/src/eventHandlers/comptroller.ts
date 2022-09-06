@@ -14,11 +14,11 @@ export async function handleMarketListed(log: any) {
 
 export async function handleMarketEntered(log: any) {
   console.log("Comptroller", "MarketEntered", parseInt(log.blockNumber, 16), log.transactionHash)
-  // console.log(log)
+  console.log(log)
   const event = Config.canto.contracts.comptroller.interface.parseLog(log);
-  // console.log(event)
+  console.log(event)
   let address = log.address;
-  let blockNumber = parseInt(log.blockNumber);
+  let blockNumber = new Prisma.Decimal(parseInt(log.blockNumber));
   let account = event.args.account;
   let txnHash = log.transactionHash;
   let timestamp = await getTimestamp(blockNumber);
@@ -31,6 +31,10 @@ export async function handleMarketEntered(log: any) {
     }
   });
 
+  if (market == null) {
+    market = await createMarket(address);
+  }
+
   if (market !== null) {
     let enteredMarket = true;
     await updateCommonCTokenStats(
@@ -42,6 +46,8 @@ export async function handleMarketEntered(log: any) {
       blockNumber,
       enteredMarket
     );
+  } else {
+    console.log(address);
   }
 }
 
@@ -51,7 +57,7 @@ export async function handleMarketExited(log: any) {
   const event = Config.canto.contracts.comptroller.interface.parseLog(log);
   // console.log(event)
   let address = log.address;
-  let blockNumber = parseInt(log.blockNumber);
+  let blockNumber = new Prisma.Decimal(parseInt(log.blockNumber));
   let account = event.args.account;
   let txnHash = log.transactionHash;
   let timestamp = await getTimestamp(blockNumber);
@@ -64,18 +70,24 @@ export async function handleMarketExited(log: any) {
   }
  });
 
- if (market !== null) {
-  let enteredMarket = false;
-  await updateCommonCTokenStats(
-    market.id,
-    market.symbol,
-    account,
-    txnHash,
-    timestamp,
-    blockNumber,
-    enteredMarket
-  );
- }
+  if (market == null) {
+    market = await createMarket(address);
+  }
+
+  if (market !== null) {
+    let enteredMarket = false;
+    await updateCommonCTokenStats(
+      market.id,
+      market.symbol,
+      account,
+      txnHash,
+      timestamp,
+      blockNumber,
+      enteredMarket
+    );
+  } else {
+    console.log(address);
+  }
 }
 
 export async function handleNewCloseFactor(log: any) {

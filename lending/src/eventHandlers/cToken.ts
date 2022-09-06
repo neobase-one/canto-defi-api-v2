@@ -11,10 +11,10 @@ export async function handleBorrow(log: any) {
   console.log(event);
 
 	let address = log.address;
-  let blockNumber = parseInt(log.blockNumber);
-  let accountId = event.args.account;
-	let accountBorrows = event.args.accountBorrows;
-	let borrowAmount = event.args.borrowAmount;
+  let blockNumber = new Prisma.Decimal(parseInt(log.blockNumber, 16));
+  let accountId = event.args.borrower;
+	let accountBorrows = event.args.accountBorrows.toString();
+	let borrowAmount = event.args.borrowAmount.toString();
   let txHash = log.transactionHash;
   let timestamp = await getTimestamp(blockNumber);
 
@@ -27,17 +27,22 @@ export async function handleBorrow(log: any) {
     }
   });
 
+	if (market == null) {
+    market = await createMarket(address);
+  }
+
 	if (market !== null) {
 		let marketId = market.id;
+		let marketSymbol = market.symbol;
 		let borrowIndex = market.borrowIndex;
 
 		// c token
 		let cTokenStatId = (marketId).concat("-").concat(accountId);
-		let cTokenStats = await prisma.accountCToken.update({
+		let cTokenStats = await prisma.accountCToken.upsert({
 			where: {
 				id: cTokenStatId
 			},
-			data: {
+			update: {
 				transactionHashes: {
 					push: txHash
 				},
@@ -50,6 +55,18 @@ export async function handleBorrow(log: any) {
 				totalUnderlyingBorrowed: {
 					increment: borrowAmount
 				}
+			},
+			create: {
+				id: cTokenStatId,
+				account: accountId,
+				market: marketId,
+				symbol: marketSymbol,
+				transactionHashes: [txHash],
+				transactionTimes: [timestamp],
+				accrualBlockNumber: blockNumber,
+				storedBorrowBalance: accountBorrows,
+				accountBorrowIndex: borrowIndex,
+				totalUnderlyingBorrowed: borrowAmount
 			}
 		})
 
@@ -81,7 +98,9 @@ export async function handleBorrow(log: any) {
 				}
 			})
 		}
-	}
+	} else {
+    console.log(address);
+  }
 }
 
 export async function handleRepayBorrow(log: any) {
@@ -102,12 +121,16 @@ export async function handleRepayBorrow(log: any) {
 		}
 	});
 
+	if (market == null) {
+    market = await createMarket(marketId);
+  }
+
 	if (market !== null) {
-		let blockNumber = log.blockNumber;
+		let blockNumber = new Prisma.Decimal(parseInt(log.blockNumber, 16));
 		let txHash = log.transactionHash;
 		let accountId = event.args.borrower;
-		let accountBorrows = event.args.accountBorrows;
-		let repayAmount = event.args.repayAmount;
+		let accountBorrows = event.args.accountBorrows.toString();
+		let repayAmount = event.args.repayAmount.toString();
 		let accountBorrowIndex = market.borrowIndex;
 		let marketSymbol = market.symbol;
 		let timestamp = await getTimestamp(blockNumber);
@@ -171,7 +194,9 @@ export async function handleRepayBorrow(log: any) {
 				}
 			})
 		}
-	}
+	} else {
+    console.log(marketId);
+  }
 }
 
 export async function handleLiquidateBorrow(log: any) {
@@ -216,7 +241,7 @@ export async function handleAccrueInterest(log: any) {
   console.log(event);
 
 	let marketId = log.address;
-	let blockNumber = log.blockNumber;
+	let blockNumber = new Prisma.Decimal(parseInt(log.blockNumber, 16));
 	let timestamp = await getTimestamp(blockNumber);
 	await updateMarket(marketId, blockNumber, timestamp);
 }
@@ -228,7 +253,7 @@ export async function handleNewReserveFactor(log: any) {
   console.log(event);
 
 	let marketId = log.address;
-	let reserveFactor = event.args.newReserveFactorMantissa;
+	let reserveFactor = event.args.newReserveFactorMantissa.toString();
 
 	await prisma.market.update({
 		where: {
@@ -247,8 +272,8 @@ export async function handleTransfer(log: any) {
   console.log(event);
 
 	let marketId = log.address;
-	let blockNumber = log.blockNumber;
-	let amount = event.args.amount;
+	let blockNumber = new Prisma.Decimal(parseInt(log.blockNumber, 16));
+	let amount = event.args.amount.toString();
 
 	// market
 	let market = await prisma.market.findUnique({
@@ -264,8 +289,8 @@ export async function handleTransfer(log: any) {
 	})
 
 	if (market == null) {
-		return;
-	}
+    market = await createMarket(marketId);
+  }
 
 	let accrualBlockNumber = market.accrualBlockNumber;
 
@@ -301,11 +326,11 @@ export async function handleTransfer(log: any) {
 
 		// update c account token
 		let fromCTokenStatsId = marketId.concat('-').concat(fromAccountId)
-		let cTokenStats = await prisma.accountCToken.update({
+		let cTokenStats = await prisma.accountCToken.upsert({
 			where: {
 				id: fromCTokenStatsId
 			},
-			data: {
+			update: {
 				transactionHashes: {
 					push: txHash
 				},
@@ -319,6 +344,17 @@ export async function handleTransfer(log: any) {
 				totalUnderlyingRedeemed: {
 					increment: amountUnderylingTruncated
 				},
+			},
+			create: {
+				id: fromCTokenStatsId,
+				account: fromAccountId,
+				market: marketId,
+				symbol: marketSymbol,
+				transactionHashes: [txHash],
+				transactionTimes: [timestamp],
+				accrualBlockNumber: blockNumber,
+				cTokenBalance: 0, // todo: or -cTokenAmount
+				totalUnderlyingRedeemed: amountUnderylingTruncated,
 			}
 		})
 
@@ -355,11 +391,11 @@ export async function handleTransfer(log: any) {
 
 		// update account c token
 		let toCTokenStatsId = marketId.concat('-').concat(toAccountId)
-		let cTokenStats = await prisma.accountCToken.update({
+		let cTokenStats = await prisma.accountCToken.upsert({
 			where: {
 				id: toCTokenStatsId
 			},
-			data: {
+			update: {
 				transactionHashes: {
 					push: txHash
 				},
@@ -373,6 +409,17 @@ export async function handleTransfer(log: any) {
 				totalUnderlyingRedeemed: {
 					increment: amountUnderylingTruncated
 				},
+			},
+			create: {
+				id: toCTokenStatsId,
+				account: fromAccountId,
+				market: marketId,
+				symbol: marketSymbol,
+				transactionHashes: [txHash],
+				transactionTimes: [timestamp],
+				accrualBlockNumber: blockNumber,
+				cTokenBalance: cTokenAmount,
+				totalUnderlyingRedeemed: amountUnderylingTruncated,
 			}
 		})
 
