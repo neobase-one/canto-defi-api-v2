@@ -65,7 +65,7 @@ CREATE TABLE "Market" (
     "perBlockBorrowInterest" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "perBlockSupplyInterest" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "borrowIndex" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "tokenPerEthRatio" DECIMAL(65,30) NOT NULL DEFAULT 0,
+    "tokenPerNoteRatio" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "tokenPerUSDRatio" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "borrowRate" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "cash" DECIMAL(65,30) NOT NULL DEFAULT 0,

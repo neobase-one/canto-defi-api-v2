@@ -74,7 +74,7 @@ model Market {
   perBlockBorrowInterest   Decimal @default(0)
   perBlockSupplyInterest   Decimal @default(0)
   borrowIndex              Decimal @default(0)
-  tokenPerEthRatio         Decimal @default(0)
+  tokenPerNoteRatio         Decimal @default(0)
   tokenPerUSDRatio         Decimal @default(0)
   borrowRate               Decimal @default(0)
   cash                     Decimal @default(0)
