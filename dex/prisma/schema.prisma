@@ -254,17 +254,17 @@ model Bundle {
 }
 
 // Data accumulated and condensed into day stats for all of Uniswap
-model UniswapDayData {
+model StableswapDayData {
   id   String @id // timestamp rounded to current day by dividing by 86400
   date Int
 
-  dailyVolumeETH       Decimal
-  dailyVolumeUSD       Decimal
-  dailyVolumeUntracked Decimal
+  dailyVolumeETH       Decimal @default(0)
+  dailyVolumeUSD       Decimal @default(0)
+  dailyVolumeUntracked Decimal @default(0)
 
-  totalVolumeETH    Decimal
+  totalVolumeETH    Decimal @default(0)
   totalLiquidityETH Decimal
-  totalVolumeUSD    Decimal // Accumulate at each trade, not just calculated off whatever totalVolume is. making it more accurate as it is a live conversion
+  totalVolumeUSD    Decimal @default(0) // Accumulate at each trade, not just calculated off whatever totalVolume is. making it more accurate as it is a live conversion
   totalLiquidityUSD Decimal
 
   txCount BigInt
@@ -287,10 +287,10 @@ model PairHourData {
   reserveUSD Decimal
 
   // volume stats
-  hourlyVolumeToken0 Decimal
-  hourlyVolumeToken1 Decimal
-  hourlyVolumeUSD    Decimal
-  hourlyTxns         BigInt
+  hourlyVolumeToken0 Decimal @default(0)
+  hourlyVolumeToken1 Decimal @default(0)
+  hourlyVolumeUSD    Decimal @default(0)
+  hourlyTxns         BigInt @default(0)
 }
 
 // Data accumulated and condensed into day stats for each exchange
@@ -314,10 +314,10 @@ model PairDayData {
   reserveUSD Decimal
 
   // volume stats
-  dailyVolumeToken0 Decimal
-  dailyVolumeToken1 Decimal
-  dailyVolumeUSD    Decimal
-  dailyTxns         BigInt
+  dailyVolumeToken0 Decimal @default(0)
+  dailyVolumeToken1 Decimal @default(0)
+  dailyVolumeUSD    Decimal @default(0)
+  dailyTxns         BigInt @default(0)
 }
 
 model TokenDayData {
@@ -327,15 +327,15 @@ model TokenDayData {
   tokenId String
 
   // volume stats
-  dailyVolumeToken Decimal
-  dailyVolumeETH   Decimal
-  dailyVolumeUSD   Decimal
-  dailyTxns        BigInt
+  dailyVolumeToken Decimal @default(0)
+  dailyVolumeETH   Decimal @default(0)
+  dailyVolumeUSD   Decimal @default(0)
+  dailyTxns        BigInt @default(0)
 
   // liquidity stats
   totalLiquidityToken Decimal
   totalLiquidityETH   Decimal
-  totalLiquidityUSD   Decimal
+  totalLiquidityUSD   Decimal @default(0)
 
   // price stats
   priceUSD Decimal

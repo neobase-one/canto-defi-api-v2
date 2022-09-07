@@ -9,6 +9,7 @@ import {
   handleSync,
   handleTransfer,
 } from "../eventHandlers/pair";
+import { exit } from "process";
 
 export async function parsePairEvents() {
   while (1) {
@@ -34,11 +35,11 @@ export async function parsePairEvents() {
         // case config.canto.contracts.baseV1Pair.topics["Mint"]: {await handleMint(log); break;}
         // case config.canto.contracts.baseV1Pair.topics["Burn"]: {await handleBurn(log); break;}
         // case config.canto.contracts.baseV1Pair.topics["Swap"]: {await handleSwap(log); break;}
-        case config.canto.contracts.baseV1Pair.topics["Sync"]: {
-          await handleSync(log);
-          break;
-        }
-        // case config.canto.contracts.baseV1Pair.topics["Transfer"]: {await handleTransfer(log); break;}
+        // case config.canto.contracts.baseV1Pair.topics["Sync"]: {
+          // await handleSync(log);
+          // break;
+        // }
+        case config.canto.contracts.baseV1Pair.topics["Transfer"]: {await handleTransfer(log); break;}
       }
       console.log("parsed", log.transactionHash);
     }
@@ -58,4 +59,5 @@ export async function parsePairEvents() {
     });
   }
   console.log("sync complete: BaseV1Pair");
+  exit()
 }

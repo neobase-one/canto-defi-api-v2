@@ -3,6 +3,7 @@ import prisma from "../prisma";
 import provider from "../provider";
 import config from "../config";
 import { handlePairCreated } from "../eventHandlers/factory";
+import { exit } from "process";
 
 export async function parseFactoryEvents() {
   while (1) {
@@ -45,4 +46,5 @@ export async function parseFactoryEvents() {
     });
   }
   console.log("sync complete: BaseV1Factory");
+  exit()
 }

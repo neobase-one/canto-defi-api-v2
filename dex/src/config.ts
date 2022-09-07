@@ -72,8 +72,8 @@ const config = {
           // Swap: ethers.utils.id(
           // "Swap(address,uint256,uint256,uint256,uint256,address)"
           // ),
-          // Transfer: ethers.utils.id("Transfer(address,address,uint256)"),
-          Sync: ethers.utils.id("Sync(uint256,uint256)"),
+          Transfer: ethers.utils.id("Transfer(address,address,uint256)"),
+          // Sync: ethers.utils.id("Sync(uint256,uint256)"),
         },
       },
     },
