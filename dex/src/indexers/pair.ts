@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { ethers, providers } from "ethers";
 import prisma from "../prisma";
 import provider from "../provider";
 import config from "../config";
@@ -6,11 +6,13 @@ import { handleBurn, handleMint, handleSwap, handleSync, handleTransfer } from "
 
 export async function parsePairEvents() {
   while (1) {
+  // for(var i = 0; i < 100; i++){
     const bs = await prisma.blockSync.findUniqueOrThrow({
       where: { id: "BaseV1Pair" },
       select: { blockSynced: true },
     });
-    const logs = await provider.send("eth_getLogs", [
+    console.log("block: ", bs.blockSynced)
+    const logs: providers.Log[] = await provider.send("eth_getLogs", [
       {
         fromBlock: "0x" + bs.blockSynced.toString(16),
         toBlock:
@@ -21,13 +23,15 @@ export async function parsePairEvents() {
     ]);
     
     for (let log of logs) {
+      // console.log(log)
       switch(log.topics[0]) {
-        case config.canto.contracts.baseV1Pair.topics["Mint"]: {await handleMint(log); break;} 
-        case config.canto.contracts.baseV1Pair.topics["Burn"]: {await handleBurn(log); break;} 
-        case config.canto.contracts.baseV1Pair.topics["Swap"]: {await handleSwap(log); break;} 
+        // case config.canto.contracts.baseV1Pair.topics["Mint"]: {await handleMint(log); break;} 
+        // case config.canto.contracts.baseV1Pair.topics["Burn"]: {await handleBurn(log); break;} 
+        // case config.canto.contracts.baseV1Pair.topics["Swap"]: {await handleSwap(log); break;} 
         case config.canto.contracts.baseV1Pair.topics["Sync"]: {await handleSync(log); break;} 
-        case config.canto.contracts.baseV1Pair.topics["Transfer"]: {await handleTransfer(log); break;} 
+        // case config.canto.contracts.baseV1Pair.topics["Transfer"]: {await handleTransfer(log); break;} 
       }
+      console.log("parsed", log.transactionHash);
     }
 
     const liveBlock = await provider.getBlockNumber();

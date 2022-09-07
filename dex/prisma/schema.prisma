@@ -125,7 +125,7 @@ model User {
   id                        String                      @id
   liquidityPositions        LiquidityPosition[]
   LiquidityPositionSnapshot LiquidityPositionSnapshot[]
-  usdSwapped                Decimal
+  usdSwapped                Decimal @default(0)
 }
 
 model LiquidityPosition {
@@ -179,11 +179,11 @@ model Mint {
   pairId        String
 
   // populated from the primary Transfer event
-  to        Bytes
+  to        String
   liquidity Decimal
 
   // populated from the Mint event
-  sender    Bytes?
+  sender    String?
   amount0   Decimal?
   amount1   Decimal?
   logIndex  BigInt?
@@ -191,7 +191,7 @@ model Mint {
   amountUSD Decimal?
 
   // optional fee fields, if a Transfer event is fired in _mintFee
-  feeTo        Bytes?
+  feeTo        String?
   feeLiquidity Decimal?
 }
 
@@ -208,10 +208,10 @@ model Burn {
   liquidity Decimal
 
   // populated from the Burn event
-  sender    Bytes?
+  sender    String?
   amount0   Decimal?
   amount1   Decimal?
-  to        Bytes?
+  to        String?
   logIndex  BigInt?
   // derived amount based on available prices of tokens
   amountUSD Decimal?
@@ -220,7 +220,7 @@ model Burn {
   needsComplete Boolean
 
   // optional fee fields, if a Transfer event is fired in _mintFee
-  feeTo        Bytes?
+  feeTo        String?
   feeLiquidity Decimal?
 }
 
@@ -234,13 +234,13 @@ model Swap {
   pairId        String
 
   // populated from the Swap event
-  sender     Bytes
-  from       Bytes // the EOA that initiated the txn
+  sender     String
+  from       String // the EOA that initiated the txn
   amount0In  Decimal
   amount1In  Decimal
   amount0Out Decimal
   amount1Out Decimal
-  to         Bytes
+  to         String
   logIndex   BigInt?
 
   // derived info
@@ -297,7 +297,7 @@ model PairHourData {
 model PairDayData {
   id          String @id
   date        Int
-  pairAddress Bytes
+  pairAddress String
   token0      Token  @relation("pairDayDataBase", fields: [token0Id], references: [id])
   token0Id    String
   token1      Token  @relation("pairDayDataQuote", fields: [token1Id], references: [id])

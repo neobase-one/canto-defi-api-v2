@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { providers } from "ethers";
 import prisma from "../prisma";
 import provider from "../provider";
 import config from "../config";
@@ -10,14 +10,16 @@ import {
 } from "../utils/token";
 import { getBlockTimestamp } from "../utils/helpers";
 
-export async function handlePairCreated(log: any) {
+export async function handlePairCreated(log: providers.Log) {
   const event = config.canto.contracts.baseV1Factory.interface.parseLog(log);
   const factoryAddress = config.canto.contracts.baseV1Factory.addresses[0];
-  // if(!await prisma.stableswapFactory.count({where: {id: factoryAddress}})){
-  // await prisma.bundle.create({
-  // id: "1",
-  // })
-  // }
+  if(!await prisma.stableswapFactory.count({where: {id: factoryAddress}})){
+    await prisma.bundle.create({
+      data: {
+        id: "1",
+      }
+    })
+  }
   await prisma.stableswapFactory.upsert({
     where: {
       id: factoryAddress,
@@ -68,8 +70,8 @@ export async function handlePairCreated(log: any) {
       id: event.args.pair,
       token0Id: token0.id,
       token1Id: token1.id,
-      createdAtTimestamp: await getBlockTimestamp(parseInt(log.blockNumber)),
-      createdAtBlockNumber: parseInt(log.blockNumber),
+      createdAtTimestamp: await getBlockTimestamp(log.blockNumber),
+      createdAtBlockNumber: BigInt(log.blockNumber),
     },
   });
 }
