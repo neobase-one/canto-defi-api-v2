@@ -11,16 +11,27 @@ dotenv.config();
 // process.env.NODE_ENV = process.env.NODE_ENV || "development";
 
 export const Config = {
+  // server port
+  port: parseInt(process.env.PORT || "8080"),
+
+  // api conf
+  api: {
+    prefix: "/",
+  },
+  
   // database url
   databaseUrl: process.env.DATABASE_URL!,
 
   // rpc url (wss)
   rpcUrl: process.env.RPC_URL!,
 
+  // indexer
+  indexer: process.env.INDEXER_ENABLED || false,
+
   // canto
   canto: {
     blockTime: 5, // in seconds
-    blockLookupWindow: 3,
+    blockLookupWindow: 300,
     // lending dash needs all these
     lendingDashboard: {
       USDC_ADDRESS: "0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd",
