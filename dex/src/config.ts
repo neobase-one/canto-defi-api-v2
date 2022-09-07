@@ -23,8 +23,8 @@ const config = {
     blockTime: 5, // in seconds
     blockLookupWindow: 5000,
 
-    MINIMUM_LIQUIDITY_THRESHOLD_ETH: new Decimal('2'),
-    MINIMUM_USD_THRESHOLD_NEW_PAIRS: new Decimal('400000'),
+    MINIMUM_LIQUIDITY_THRESHOLD_ETH: new Decimal("2"),
+    MINIMUM_USD_THRESHOLD_NEW_PAIRS: new Decimal("400000"),
 
     wCANTO_ADDRESS: "0x826551890Dc65655a0Aceca109aB11AbDbD7a07B", //wCANTO
     NOTE_CANTO_PAIR: "0x1D20635535307208919f0b67c3B2065965A85aA9", // token1 = wCANTO
@@ -70,7 +70,7 @@ const config = {
           // Mint: ethers.utils.id("Mint(address,uint256,uint256)"),
           // Burn: ethers.utils.id("Burn(address,uint256,uint256,address)"),
           // Swap: ethers.utils.id(
-            // "Swap(address,uint256,uint256,uint256,uint256,address)"
+          // "Swap(address,uint256,uint256,uint256,uint256,address)"
           // ),
           // Transfer: ethers.utils.id("Transfer(address,address,uint256)"),
           Sync: ethers.utils.id("Sync(uint256,uint256)"),

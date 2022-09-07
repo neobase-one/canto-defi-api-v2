@@ -1,6 +1,5 @@
 import { Decimal } from "@prisma/client/runtime";
 
-
 export const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
 
 // export let ZERO_BI = BigInt.fromI32(0)

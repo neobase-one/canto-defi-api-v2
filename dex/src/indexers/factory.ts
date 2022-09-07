@@ -10,19 +10,22 @@ export async function parseFactoryEvents() {
       where: { id: "BaseV1Factory" },
       select: { blockSynced: true },
     });
-    console.log("block: ", bs.blockSynced)
+    console.log("block: ", bs.blockSynced);
     const logs: providers.Log[] = await provider.send("eth_getLogs", [
       {
         fromBlock: "0x" + bs.blockSynced.toString(16),
         toBlock:
           "0x" + (bs.blockSynced + config.canto.blockLookupWindow).toString(16),
         topics: [Object.values(config.canto.contracts.baseV1Factory.topics)],
-        address: config.canto.contracts.baseV1Factory.addresses
+        address: config.canto.contracts.baseV1Factory.addresses,
       },
     ]);
     for (let log of logs) {
-      switch(log.topics[0]) {
-        case config.canto.contracts.baseV1Factory.topics["PairCreated"]: {await handlePairCreated(log); break;} 
+      switch (log.topics[0]) {
+        case config.canto.contracts.baseV1Factory.topics["PairCreated"]: {
+          await handlePairCreated(log);
+          break;
+        }
       }
       console.log("parsed", log.transactionHash);
     }
