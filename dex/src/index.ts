@@ -30,8 +30,8 @@ async function init() {
 async function main() {
   await init();
   console.log("setup completed, parsing now...\n");
-  await parsePairEvents();
   // await parseFactoryEvents();
+  await parsePairEvents();
 }
 
 main();

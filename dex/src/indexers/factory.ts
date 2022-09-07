@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { ethers, providers } from "ethers";
 import prisma from "../prisma";
 import provider from "../provider";
 import config from "../config";
@@ -10,7 +10,8 @@ export async function parseFactoryEvents() {
       where: { id: "BaseV1Factory" },
       select: { blockSynced: true },
     });
-    const logs = await provider.send("eth_getLogs", [
+    console.log("block: ", bs.blockSynced)
+    const logs: providers.Log[] = await provider.send("eth_getLogs", [
       {
         fromBlock: "0x" + bs.blockSynced.toString(16),
         toBlock:
