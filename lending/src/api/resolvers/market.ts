@@ -1,4 +1,5 @@
 
+import { ethers } from "ethers";
 import { Arg, FieldResolver, Query, Resolver, Root } from "type-graphql";
 import prisma from "../../prisma";
 import { DecimalScalar } from "../schema/decimalScalar";
@@ -8,6 +9,12 @@ import {
   MarketInput,
 } from "../schema/input";
 import { Market } from "../schema/market";
+import cTokenABI from '../../../abis/CToken.json';
+import provider from "../../provider";
+import { Decimal } from "@prisma/client/runtime";
+import { ONE_PD, DAYS_IN_YEAR_PD, HUNDRED_PD, SECONDS_IN_DAY_PD } from "../../utils/consts";
+import { Config } from "../../config";
+import { exponentToPD } from "../../utils/helper";
 
 @Resolver((of) => Market)
 export class MarketResolver {
@@ -44,12 +51,6 @@ export class MarketResolver {
   //   }
   // }
 
-  // @Query((returns) => Market)
-  // async market(@Arg("input") input: MarketInput) {
-  //   const val = await MarketModel.findOne({ id: input.id }).exec();
-  //   return val?.toGenerated();
-  // }
-
   @Query((returns) => Market)
   async market(@Arg("input") input: MarketInput) {
     let market = await prisma.market.findUnique({
@@ -59,21 +60,44 @@ export class MarketResolver {
     return market;
   }
 
-  // @FieldResolver(returns => DecimalScalar)
-  // async supplyAPY(@Root() market: Market): Promise<Decimal> {
-  //   // service
-  //   let marketService = Container.get(MarketService);
+  @FieldResolver(returns => DecimalScalar)
+  async supplyAPY(@Root() market: Market): Promise<Decimal> {
+    return getSupplyAPY(market.id);
+  }
 
-  //   // return
-  //   return marketService.getSupplyAPY(market.id);
-  // }
+  @FieldResolver(returns => DecimalScalar)
+  async borrowAPY(@Root() market: Market): Promise<Decimal> {
+    return getBorrowAPY(market.id);
+  }
+}
 
-  // @FieldResolver(returns => DecimalScalar)
-  // async borrowAPY(@Root() market: Market): Promise<Decimal> {
-  //   // service
-  //   let marketService = Container.get(MarketService);
+export async function getSupplyAPY(marketId: string) {
+  let contract = new ethers.Contract(marketId, cTokenABI, provider);
+  let ratePerBlock = await contract.supplyRatePerBlock();
+  return calculateAPY(ratePerBlock);
+}
 
-  //   // return
-  //   return marketService.getBorrowAPY(market.id);
-  // }
+export async function getBorrowAPY(marketId: string) {
+  let contract = new ethers.Contract(marketId, cTokenABI, provider);
+  let ratePerBlock = await contract.supplyRatePerBlock();
+  return calculateAPY(ratePerBlock);
+}
+
+function calculateAPY(ratePerBlock: number): Decimal {
+  // todo: verify formula
+  let mantissa_factor = Config.canto.lendingDashboard.MANTISSA_FACTOR;
+  let block_time = Config.canto.BLOCK_TIME;
+  let blocksPerDay = SECONDS_IN_DAY_PD.div(block_time);
+  let mantissa = exponentToPD(mantissa_factor);
+  let denom = mantissa;
+  // let denom = mantissa.times(blockPerDay);
+  let frac = new Decimal(ratePerBlock.toString()).times(blocksPerDay).div(denom);
+  let a = frac.plus(ONE_PD);
+  let b = a.pow(DAYS_IN_YEAR_PD)
+  let c = b.minus(ONE_PD);
+
+  // calculate apy
+  let apy = c.times(HUNDRED_PD);
+  
+  return apy;
 }

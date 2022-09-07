@@ -10,12 +10,14 @@ scalar Decimal
 
 type Market {
   accrualBlockNumber: Decimal
+  borrowAPY: Decimal!
   borrowIndex: Decimal
   exchangeRate: Decimal
   id: ID!
   name: String
   perBlockBorrowInterest: Decimal
   perBlockSupplyInterest: Decimal
+  supplyAPY: Decimal!
   symbol: String
   tokenPerNoteRatio: Decimal
   tokenPerUSDRatio: Decimal

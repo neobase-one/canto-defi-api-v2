@@ -30,7 +30,7 @@ export const Config = {
 
   // canto
   canto: {
-    blockTime: 5, // in seconds
+    BLOCK_TIME: 5, // in seconds
     blockLookupWindow: 300,
     // lending dash needs all these
     lendingDashboard: {

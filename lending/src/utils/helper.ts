@@ -194,7 +194,7 @@ export async function updateMarket(
   return market;
 }
 
-function exponentToPD(exp: number) {
+export function exponentToPD(exp: number) {
   return Prisma.Decimal.pow(10, exp);
 }
 
