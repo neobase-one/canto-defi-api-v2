@@ -19,6 +19,10 @@ import {
   createLiquiditySnapshot,
 } from "../utils/helpers";
 import {
+  updateFactoryDayData, updatePairDayData, updatePairHourData, updateTokenDayData
+} from "../utils/dayUpdates"
+
+import {
   getEthPriceInUSD,
   findEthPerToken,
   getTrackedLiquidityUSD,
@@ -366,11 +370,129 @@ export async function handleSync(log: any) {
 export async function handleMint(log: providers.Log) {
   // console.log("mint")
   const event = config.canto.contracts.baseV1Pair.interface.parseLog(log);
+
+  const pair = await prisma.pair.findFirstOrThrow({
+    where: { id: ethers.utils.getAddress(log.address) },
+  });
+
+  let transaction = await prisma.transaction.findFirstOrThrow({
+    where: {
+      id: log.transactionHash,
+    },
+    include: {
+      mints: true,
+    },
+  });
+
+  let mints = transaction.mints;
+
+  // update txn counts
+  const token0 = await prisma.token.update({where: {id: pair.token0Id}, data: {txCount: {increment: 1}}}) 
+  const token1 = await prisma.token.update({where: {id: pair.token1Id}, data: {txCount: {increment: 1}}}) 
+
+  // update exchange info (excpet balances, sync will cover that)
+  let token0Amount = await convertTokenToDecimal(event.args.amount0, Number(token0.decimals));
+  let token1Amount = await convertTokenToDecimal(event.args.amount1, Number(token1.decimals));
+
+  // get new amount of USD and NOTE for tracking
+  const bundle = await prisma.bundle.findFirstOrThrow({
+    where: { id: "1" },
+  });
+  let amountTotalETH = token1.derivedETH.times(token1Amount)
+    .plus(token0.derivedETH.times(token0Amount));
+  // let amountTotalUSD = amountTotalETH.times(bundle.ethPrice);
+  let amountTotalUSD = amountTotalETH;
+
+  // update txn counts
+  await prisma.pair.update({where: {id: ethers.utils.getAddress(log.address)}, data: {txCount: {increment: 1}}}) 
+  await prisma.stableswapFactory.update({where: {id: config.canto.contracts.baseV1Factory.addresses[0]}, data: {txCount: {increment: 1}}}) 
+
+  // update mint
+  const mint = await prisma.mint.update({
+    where: {id: mints[mints.length - 1].id},
+    data: {
+      sender: event.args.sender,
+      amount0: token0Amount,
+      amount1: token1Amount,
+      logIndex: Number(log.logIndex),
+      amountUSD: amountTotalUSD
+    }
+  })
+
+  // update LP position
+  const liquidityPosition = await createLiquidityPosition(ethers.utils.getAddress(log.address), mint.to);
+  await createLiquiditySnapshot(liquidityPosition, log);
+
+  // update day metric objects
+  await updatePairDayData(log);
+  await updatePairHourData(log);
+  await updateFactoryDayData(log);
+  await updateTokenDayData(token0, log);
+  await updateTokenDayData(token1, log);
 }
 
 export async function handleBurn(log: any) {
   // console.log("burn")
   const event = config.canto.contracts.baseV1Pair.interface.parseLog(log);
+
+  const pair = await prisma.pair.findFirstOrThrow({
+    where: { id: ethers.utils.getAddress(log.address) },
+  });
+
+  // burns
+  let transaction = await prisma.transaction.findFirstOrThrow({
+    where: {
+      id: log.transactionHash,
+    },
+    include: {
+      burns: true,
+    },
+  }); 
+  let burns = transaction.burns;
+
+
+  // update txn counts
+  const token0 = await prisma.token.update({where: {id: pair.token0Id}, data: {txCount: {increment: 1}}}) 
+  const token1 = await prisma.token.update({where: {id: pair.token1Id}, data: {txCount: {increment: 1}}}) 
+
+  // update token info
+  let token0Amount = await convertTokenToDecimal(event.args.amount0, Number(token0.decimals));
+  let token1Amount = await convertTokenToDecimal(event.args.amount1, Number(token1.decimals));
+
+  // get new amount of USD and ETH for tracking
+  const bundle = await prisma.bundle.findFirstOrThrow({
+    where: { id: "1" },
+  });
+  let amountTotalETH = token1.derivedETH.times(token1Amount)
+    .plus(token0.derivedETH.times(token0Amount));
+  // let amountTotalUSD = amountTotalETH.times(bundle.ethPrice);
+  let amountTotalUSD = amountTotalETH;
+  
+  // update txn counts
+  await prisma.pair.update({where: {id: ethers.utils.getAddress(log.address)}, data: {txCount: {increment: 1}}}) 
+  await prisma.stableswapFactory.update({where: {id: config.canto.contracts.baseV1Factory.addresses[0]}, data: {txCount: {increment: 1}}}) 
+
+  // update burn
+  const burn = await prisma.burn.update({
+    where: {id: burns[burns.length - 1].id},
+    data: {
+      amount0: token0Amount,
+      amount1: token1Amount,
+      logIndex: Number(log.logIndex),
+      amountUSD: amountTotalUSD
+    }
+  })
+
+  // update LP position
+  const liquidityPosition = await createLiquidityPosition(ethers.utils.getAddress(log.address), burn.sender!);
+  await createLiquiditySnapshot(liquidityPosition, log);
+
+  // update day metric objects
+  await updatePairDayData(log);
+  await updatePairHourData(log);
+  await updateFactoryDayData(log);
+  await updateTokenDayData(token0, log);
+  await updateTokenDayData(token1, log);
 }
 
 export async function handleSwap(log: any) {

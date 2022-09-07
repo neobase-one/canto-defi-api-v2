@@ -1,12 +1,12 @@
 import provider from "../provider";
 import prisma from "../prisma";
-import Decimal from "decimal.js";
 import { LiquidityPosition, Prisma } from "@prisma/client";
 import { providers } from "ethers";
 import { time } from "console";
 import { ethers } from "ethers";
 import config from "../config";
 import BaseV1FactoryABI from "../../abis/BaseV1Factory.json";
+import { Decimal } from "@prisma/client/runtime";
 
 export const factoryContract = new ethers.Contract(
   config.canto.contracts.baseV1Factory.addresses[0],

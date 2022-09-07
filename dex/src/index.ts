@@ -2,6 +2,7 @@ import { parseFactoryEvents } from "./indexers/factory";
 import { parsePairEvents } from "./indexers/pair";
 import prisma from "./prisma";
 import config from "./config";
+import { exit } from "process";
 
 async function init() {
   await prisma.blockSync.upsert({
@@ -19,7 +20,10 @@ async function init() {
     where: {
       id: "BaseV1Pair",
     },
-    update: {},
+    update: {
+      id: "BaseV1Pair",
+      blockSynced: config.canto.contracts.baseV1Pair.startBlock,
+    },
     create: {
       id: "BaseV1Pair",
       blockSynced: config.canto.contracts.baseV1Pair.startBlock,
