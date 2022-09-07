@@ -23,13 +23,13 @@ export class MarketsInput {
   @Field({ defaultValue: OrderDirection.ASC, nullable: true })
   orderDirection: OrderDirection
 
-  constructor() {
-    this.id = [""],
-    this.first = 0,
-    this.skip = 0,
-    this.orderBy = "",
-    this.orderDirection = OrderDirection.ASC
-  }
+  // constructor() {
+  //   this.id = [""],
+  //   this.first = 0,
+  //   this.skip = 0,
+  //   this.orderBy = "",
+  //   this.orderDirection = OrderDirection.ASC
+  // }
 }
 
 @InputType()

@@ -4,7 +4,7 @@ import { DecimalScalar } from "../schema/decimalScalar";
 
 @ObjectType()
 export class Market {
-  @Field((type) => ID)
+  @Field((type) => ID, { nullable: true })
   id: string;
 
   @Field((type) => String, { nullable: true })

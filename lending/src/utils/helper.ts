@@ -9,6 +9,7 @@ import prisma from "../prisma";
 import { ADDRESS_ZERO, cCANTO_ADDRESS, cTOKEN_DECIMALS_PD, cUSDC_ADDRESS, MANTISSA_FACTOR, MANTISSA_FACTOR_PD, ZERO_PD } from './consts';
 import { fetchTokenDecimals, fetchTokenName, fetchTokenSymbol } from './token';
 import { FormatTypes, Interface } from 'ethers/lib/utils';
+import { OrderDirection } from '../api/schema/input';
 
 export async function createMarket(marketAddress: string) {
   let cUSDCAddress = Config.canto.lendingDashboard.cUSDC_ADDRESS;
@@ -304,4 +305,12 @@ export async function updateCommonCTokenStats(
   });
 
   return cTokenStats;
+}
+
+export function orderDirection(od: OrderDirection) {
+  if (od === OrderDirection.DES) {
+    return Prisma.SortOrder.desc;
+  } else {
+    return Prisma.SortOrder.asc;
+  }
 }

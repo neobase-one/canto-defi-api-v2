@@ -13,7 +13,7 @@ type Market {
   borrowAPY: Decimal!
   borrowIndex: Decimal
   exchangeRate: Decimal
-  id: ID!
+  id: ID
   name: String
   perBlockBorrowInterest: Decimal
   perBlockSupplyInterest: Decimal
@@ -32,6 +32,15 @@ input MarketInput {
   id: String!
 }
 
+input MarketsInput {
+  first: Int = 1000
+  id: [String!]
+  orderBy: String = "totalCash"
+  orderDirection: String = "ASC"
+  skip: Int = 0
+}
+
 type Query {
   market(input: MarketInput!): Market!
+  markets(input: MarketsInput!): [Market!]!
 }
