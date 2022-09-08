@@ -6,9 +6,9 @@ import { Prisma } from "@prisma/client";
 
 export async function handleBorrow(log: any) {
   console.log("cToken", "Borrow", parseInt(log.blockNumber, 16), log.transactionHash);
-  console.log(log);
+  // console.log(log);
   const event = Config.canto.contracts.cToken.interface.parseLog(log);
-  console.log(event);
+  // console.log(event);
 
 	let address = log.address;
   let blockNumber = new Prisma.Decimal(parseInt(log.blockNumber, 16));
@@ -107,7 +107,7 @@ export async function handleRepayBorrow(log: any) {
   console.log("cToken", "RepayBorrow", parseInt(log.blockNumber, 16), log.transactionHash);
   console.log(log);
   const event = Config.canto.contracts.cToken.interface.parseLog(log);
-  console.log(event);
+  // console.log(event);
 
 	let marketId = log.address;
 	let market = await prisma.market.findUnique({
@@ -203,7 +203,7 @@ export async function handleLiquidateBorrow(log: any) {
   console.log("cToken", "LiquidateBorrow", parseInt(log.blockNumber, 16), log.transactionHash);
   console.log(log);
   const event = Config.canto.contracts.cToken.interface.parseLog(log);
-  console.log(event);
+  // console.log(event);
 
 	// liquidator account
 	let liquidatorId = event.args.liquidator;
@@ -238,7 +238,7 @@ export async function handleAccrueInterest(log: any) {
   console.log("cToken", "AccrueInterest", parseInt(log.blockNumber, 16), log.transactionHash);
   console.log(log);
   const event = Config.canto.contracts.cToken.interface.parseLog(log);
-  console.log(event);
+  // console.log(event);
 
 	let marketId = log.address;
 	let blockNumber = new Prisma.Decimal(parseInt(log.blockNumber, 16));
@@ -250,7 +250,7 @@ export async function handleNewReserveFactor(log: any) {
   console.log("cToken", "NewReserveFactor", parseInt(log.blockNumber, 16), log.transactionHash);
   console.log(log);
   const event = Config.canto.contracts.cToken.interface.parseLog(log);
-  console.log(event);
+  // console.log(event);
 
 	let marketId = log.address;
 	let reserveFactor = event.args.newReserveFactorMantissa.toString();
@@ -269,7 +269,7 @@ export async function handleTransfer(log: any) {
   console.log("cToken", "Transfer", parseInt(log.blockNumber, 16), log.transactionHash);
   console.log(log);
   const event = Config.canto.contracts.cToken.interface.parseLog(log);
-  console.log(event);
+  // console.log(event);
 
 	let marketId = log.address;
 	let blockNumber = new Prisma.Decimal(parseInt(log.blockNumber, 16));
@@ -444,7 +444,7 @@ export async function handleNewMarketInterestRateModel(log: any) {
   console.log("cToken", "NewMarketInterestRateModel", parseInt(log.blockNumber, 16), log.transactionHash);
   console.log(log);
   const event = Config.canto.contracts.cToken.interface.parseLog(log);
-  console.log(event);
+  // console.log(event);
 
 	let marketId = log.address;
 	let newInterestRateModel = event.args.newInterestRateModel;

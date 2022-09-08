@@ -14,9 +14,9 @@ export async function handleMarketListed(log: any) {
 
 export async function handleMarketEntered(log: any) {
   console.log("Comptroller", "MarketEntered", parseInt(log.blockNumber, 16), log.transactionHash)
-  console.log(log)
+  // console.log(log)
   const event = Config.canto.contracts.comptroller.interface.parseLog(log);
-  console.log(event)
+  // console.log(event)
   let address = log.address;
   let blockNumber = new Prisma.Decimal(parseInt(log.blockNumber));
   let account = event.args.account;
