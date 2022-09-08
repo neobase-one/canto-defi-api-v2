@@ -1,9 +1,9 @@
 # Indexer Prototype
 
-Indexes `PairCreated` event from `BaseV1Factory` contract.
+- Indexes `PairCreated` event from `BaseV1Factory` contract
+- Indexes `Transfer` , `Sync`, `Mint`, `Burn`, `Swap`, events from `BaseV1Pair` contract
 
 ### Running instructions
-
 
 1. Copy variable file
 
