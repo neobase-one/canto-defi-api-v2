@@ -9,7 +9,7 @@ import {
 import { getBlockTimestamp } from "../utils/helpers";
 
 export async function handlePairCreated(log: providers.Log) {
-  console.log(`parsing: [pairCreated] ${log.transactionHash}`)
+  console.log(`parsing: [pairCreated] ${log.transactionHash}`);
   const event = config.canto.contracts.baseV1Factory.interface.parseLog(log);
   const factoryAddress = config.canto.contracts.baseV1Factory.addresses[0];
   if (

@@ -44,8 +44,7 @@ const config = {
       "0x826551890Dc65655a0Aceca109aB11AbDbD7a07B", // wCANTO
     ],
 
-    UNTRACKED_PAIRS: [
-    ],
+    UNTRACKED_PAIRS: [],
 
     contracts: {
       baseV1Factory: {
@@ -73,7 +72,9 @@ const config = {
           Sync: ethers.utils.id("Sync(uint256,uint256)"),
           Mint: ethers.utils.id("Mint(address,uint256,uint256)"),
           Burn: ethers.utils.id("Burn(address,uint256,uint256,address)"),
-          Swap: ethers.utils.id("Swap(address,uint256,uint256,uint256,uint256,address)"),
+          Swap: ethers.utils.id(
+            "Swap(address,uint256,uint256,uint256,uint256,address)"
+          ),
         },
       },
     },

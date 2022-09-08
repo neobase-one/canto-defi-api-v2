@@ -132,14 +132,15 @@ export async function getTrackedVolumeUSD(
   token1: Token,
   pair: Pair
 ) {
-  const WHITELIST: string[] =  config.canto.WHITELIST;
+  const WHITELIST: string[] = config.canto.WHITELIST;
   const UNTRACKED_PAIRS: string[] = config.canto.UNTRACKED_PAIRS;
-  const MINIMUM_USD_THRESHOLD_NEW_PAIRS = config.canto.MINIMUM_USD_THRESHOLD_NEW_PAIRS;
+  const MINIMUM_USD_THRESHOLD_NEW_PAIRS =
+    config.canto.MINIMUM_USD_THRESHOLD_NEW_PAIRS;
 
   // services
   const bundle = await prisma.bundle.findFirstOrThrow({
     where: { id: "1" },
-  }); 
+  });
 
   // let price0 = token0.derivedETH.times(bundle.ethPrice));
   let price0 = token0.derivedETH;
