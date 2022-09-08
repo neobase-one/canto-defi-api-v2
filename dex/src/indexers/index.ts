@@ -8,12 +8,12 @@ import { exit } from "process";
 export async function indexChain() {
   while (1) {
     const bs = await prisma.blockSync.findUniqueOrThrow({
-      where: { id: '1' },
+      where: { id: "1" },
       select: { blockNumber: true },
     });
 
-    const from = bs.blockNumber
-    const to = from + config.canto.blockLookupWindow
+    const from = bs.blockNumber;
+    const to = from + config.canto.blockLookupWindow;
     console.log(`block: `, from, to);
 
     // factory
@@ -32,9 +32,9 @@ export async function indexChain() {
 
     await prisma.blockSync.update({
       where: { id: "1" },
-      data: { blockNumber: {increment: config.canto.blockLookupWindow }},
+      data: { blockNumber: { increment: config.canto.blockLookupWindow } },
     });
   }
-  console.log("sync complete")
-  exit()
+  console.log("sync complete");
+  exit();
 }
