@@ -12,6 +12,14 @@ dotenv.config();
 // process.env.NODE_ENV = process.env.NODE_ENV || "development";
 
 const config = {
+  // server port
+  port: parseInt(process.env.PORT || "8080"),
+
+  // api conf
+  api: {
+    prefix: "/",
+  },
+
   // database url
   databaseUrl: process.env.DATABASE_URL!,
 
