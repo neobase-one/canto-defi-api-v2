@@ -11,11 +11,10 @@ datasource db {
 }
 
 model BlockSync {
-  // contract name
   id String @id
 
   // block till which its synced
-  blockSynced Int
+  blockNumber Int
 }
 
 model StableswapFactory {
@@ -110,7 +109,7 @@ model Pair {
   createdAtBlockNumber BigInt
 
   // Fields used to help derived relationship
-  liquidityProviderCount BigInt @default(0) // used to detect new exchanges
+  liquidityProviderCount Decimal @default(0) // used to detect new exchanges
 
   // derived fields
   pairHourData               PairHourData[]

@@ -1,8 +1,6 @@
 import { providers } from "ethers";
 import prisma from "../prisma";
-import provider from "../provider";
 import config from "../config";
-import { Decimal } from "@prisma/client/runtime";
 import {
   fetchTokenDecimals,
   fetchTokenSymbol,
@@ -11,6 +9,7 @@ import {
 import { getBlockTimestamp } from "../utils/helpers";
 
 export async function handlePairCreated(log: providers.Log) {
+  console.log(`parsing: [pairCreated] ${log.transactionHash}`)
   const event = config.canto.contracts.baseV1Factory.interface.parseLog(log);
   const factoryAddress = config.canto.contracts.baseV1Factory.addresses[0];
   if (
