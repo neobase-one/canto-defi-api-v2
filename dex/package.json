@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rimraf ./build && tsc",
+    "migrate": "prisma migrate dev",
+    "build": "prisma generate && rimraf ./build && tsc",
     "indexer": "node build/src/indexer/index.js",
     "api": "node build/src/api/index.js"
   },
