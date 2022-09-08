@@ -3,7 +3,7 @@ import { Config } from "./config";
 import { indexChain } from "./indexers";
 import express from "express";
 import apolloLoader from "./loaders/apollo";
-import "reflect-metadata"
+import "reflect-metadata";
 
 async function init() {
   await prisma.blockSyncLending.upsert({
@@ -34,11 +34,11 @@ async function main() {
   console.log("setup completed\n");
 
   if (Config.indexer) {
-    console.log("INDEXER ENABLED")
+    console.log("INDEXER ENABLED");
 
-    await indexChain()
+    await indexChain();
   } else {
-    console.log("API ENABLED")
+    console.log("API ENABLED");
 
     const app = express();
     let server = await apolloLoader();
@@ -53,9 +53,7 @@ async function main() {
         `🚀 Server ready at http://localhost:${Config.port}${Config.api.prefix}`
       )
     );
-    
   }
-
 }
 
 main();
