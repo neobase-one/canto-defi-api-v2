@@ -8,8 +8,8 @@ async function init() {
       id: "1",
     },
     update: {
-      id: "1",
-      blockNumber: config.canto.startBlock,
+      // id: "1",
+      // blockNumber: config.canto.startBlock,
     },
     create: {
       id: "1",

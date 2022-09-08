@@ -21,7 +21,7 @@ const config = {
   // canto
   canto: {
     blockTime: 5, // in seconds
-    blockLookupWindow: 750,
+    blockLookupWindow: 1000,
     startBlock: 85427,
 
     MINIMUM_LIQUIDITY_THRESHOLD_ETH: new Decimal("2"),
