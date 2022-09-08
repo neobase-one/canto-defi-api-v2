@@ -1,11 +1,28 @@
-import { indexFactoryEvents } from "./factory";
-import { indexPairEvents } from "./pair";
 import prisma from "../prisma";
 import config from "../config";
+
 import provider from "../provider";
 import { exit } from "process";
+import {indexPairEvents} from "./pair"
+import {indexFactoryEvents} from "./factory"
 
-export async function indexChain() {
+async function init() {
+  await prisma.blockSync.upsert({
+    where: {
+      id: "1",
+    },
+    update: {
+      // id: "1",
+      // blockNumber: config.canto.startBlock,
+    },
+    create: {
+      id: "1",
+      blockNumber: config.canto.startBlock,
+    },
+  });
+}
+
+async function indexChain() {
   while (1) {
     const bs = await prisma.blockSync.findUniqueOrThrow({
       where: { id: "1" },
@@ -38,3 +55,12 @@ export async function indexChain() {
   console.log("sync complete");
   exit();
 }
+
+async function main() {
+  await init();
+  console.log("setup completed, parsing now...\n");
+
+  await indexChain();
+}
+
+main();
