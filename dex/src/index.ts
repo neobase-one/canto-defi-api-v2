@@ -1,32 +1,19 @@
-import { parseFactoryEvents } from "./indexers/factory";
-import { parsePairEvents } from "./indexers/pair";
+import { indexChain } from "./indexers";
 import prisma from "./prisma";
 import config from "./config";
-import { exit } from "process";
 
 async function init() {
   await prisma.blockSync.upsert({
     where: {
-      id: "BaseV1Factory",
-    },
-    update: {},
-    create: {
-      id: "BaseV1Factory",
-      blockSynced: config.canto.contracts.baseV1Factory.startBlock,
-    },
-  });
-
-  await prisma.blockSync.upsert({
-    where: {
-      id: "BaseV1Pair",
+      id: "1",
     },
     update: {
-      id: "BaseV1Pair",
-      blockSynced: config.canto.contracts.baseV1Pair.startBlock,
+      id: "1",
+      blockNumber: config.canto.startBlock,
     },
     create: {
-      id: "BaseV1Pair",
-      blockSynced: config.canto.contracts.baseV1Pair.startBlock,
+      id: "1",
+      blockNumber: config.canto.startBlock,
     },
   });
 }
@@ -34,8 +21,8 @@ async function init() {
 async function main() {
   await init();
   console.log("setup completed, parsing now...\n");
-  // await parseFactoryEvents();
-  await parsePairEvents();
+
+  await indexChain();
 }
 
 main();

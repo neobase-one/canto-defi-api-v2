@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import BaseV1PairABI from "../abis/BaseV1Pair.json";
 import BaseV1FactoryABI from "../abis/BaseV1Factory.json";
 import { ethers } from "ethers";
-import Decimal from "decimal.js";
+import { Decimal } from "@prisma/client/runtime";
 
 // load env var
 dotenv.config();
@@ -21,7 +21,8 @@ const config = {
   // canto
   canto: {
     blockTime: 5, // in seconds
-    blockLookupWindow: 5000,
+    blockLookupWindow: 750,
+    startBlock: 85427,
 
     MINIMUM_LIQUIDITY_THRESHOLD_ETH: new Decimal("2"),
     MINIMUM_USD_THRESHOLD_NEW_PAIRS: new Decimal("400000"),
@@ -43,12 +44,14 @@ const config = {
       "0x826551890Dc65655a0Aceca109aB11AbDbD7a07B", // wCANTO
     ],
 
+    UNTRACKED_PAIRS: [
+    ],
+
     contracts: {
       baseV1Factory: {
         addresses: ["0xE387067f12561e579C5f7d4294f51867E0c1cFba"], // 224994
         abi: BaseV1FactoryABI,
         interface: new ethers.utils.Interface(BaseV1FactoryABI),
-        startBlock: 85427,
         topics: {
           PairCreated: ethers.utils.id(
             "PairCreated(address,address,bool,address,uint256)"
@@ -65,15 +68,12 @@ const config = {
         ],
         abi: BaseV1PairABI,
         interface: new ethers.utils.Interface(BaseV1PairABI),
-        startBlock: 85427,
         topics: {
-          // Mint: ethers.utils.id("Mint(address,uint256,uint256)"),
-          // Burn: ethers.utils.id("Burn(address,uint256,uint256,address)"),
-          // Swap: ethers.utils.id(
-          // "Swap(address,uint256,uint256,uint256,uint256,address)"
-          // ),
           Transfer: ethers.utils.id("Transfer(address,address,uint256)"),
-          // Sync: ethers.utils.id("Sync(uint256,uint256)"),
+          Sync: ethers.utils.id("Sync(uint256,uint256)"),
+          Mint: ethers.utils.id("Mint(address,uint256,uint256)"),
+          Burn: ethers.utils.id("Burn(address,uint256,uint256,address)"),
+          Swap: ethers.utils.id("Swap(address,uint256,uint256,uint256,uint256,address)"),
         },
       },
     },

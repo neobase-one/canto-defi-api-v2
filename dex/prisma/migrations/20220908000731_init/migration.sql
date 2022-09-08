@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE "BlockSync" (
     "id" TEXT NOT NULL,
-    "blockSynced" INTEGER NOT NULL,
+    "blockNumber" INTEGER NOT NULL,
 
     CONSTRAINT "BlockSync_pkey" PRIMARY KEY ("id")
 );
@@ -57,7 +57,7 @@ CREATE TABLE "Pair" (
     "txCount" BIGINT NOT NULL DEFAULT 0,
     "createdAtTimestamp" BIGINT NOT NULL,
     "createdAtBlockNumber" BIGINT NOT NULL,
-    "liquidityProviderCount" BIGINT NOT NULL DEFAULT 0,
+    "liquidityProviderCount" DECIMAL(65,30) NOT NULL DEFAULT 0,
 
     CONSTRAINT "Pair_pkey" PRIMARY KEY ("id")
 );

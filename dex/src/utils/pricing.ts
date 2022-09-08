@@ -1,6 +1,6 @@
 import prisma from "../prisma";
 import config from "../config";
-import { Token } from "@prisma/client";
+import { Token, Pair } from "@prisma/client";
 import { ADDRESS_ZERO, ZERO_BD, ONE_BD } from "./contants";
 import { factoryContract } from "./helpers";
 import { Decimal } from "@prisma/client/runtime";
@@ -84,6 +84,12 @@ export async function findEthPerToken(token: Token) {
   return ZERO_BD; // nothing was found return 0
 }
 
+/**
+ * Accepts tokens and amounts, return tracked amount based on token whitelist
+ * If one token on whitelist, return amount in that token converted to USD * 2.
+ * If both are, return sum of two amounts
+ * If neither is, return 0
+ */
 export async function getTrackedLiquidityUSD(
   tokenAmount0: Decimal,
   token0: Token,
@@ -113,6 +119,82 @@ export async function getTrackedLiquidityUSD(
   // take double value of the whitelisted token amount
   if (!WHITELIST.includes(token0.id) && WHITELIST.includes(token1.id)) {
     return tokenAmount1.times(price1).times(new Decimal("2"));
+  }
+
+  // neither token is on white list, tracked volume is 0
+  return ZERO_BD;
+}
+
+export async function getTrackedVolumeUSD(
+  tokenAmount0: Decimal,
+  token0: Token,
+  tokenAmount1: Decimal,
+  token1: Token,
+  pair: Pair
+) {
+  const WHITELIST: string[] =  config.canto.WHITELIST;
+  const UNTRACKED_PAIRS: string[] = config.canto.UNTRACKED_PAIRS;
+  const MINIMUM_USD_THRESHOLD_NEW_PAIRS = config.canto.MINIMUM_USD_THRESHOLD_NEW_PAIRS;
+
+  // services
+  const bundle = await prisma.bundle.findFirstOrThrow({
+    where: { id: "1" },
+  }); 
+
+  // let price0 = token0.derivedETH.times(bundle.ethPrice));
+  let price0 = token0.derivedETH;
+  // let price1 = token1.derivedETH.times(bundle.ethPrice);
+  let price1 = token1.derivedETH;
+
+  // dont count tracked volume on these pairs - usually rebass tokens
+  if (UNTRACKED_PAIRS.includes(pair.id)) {
+    return ZERO_BD;
+  }
+
+  // if less than 5 LPs, require high minimum reserve amount amount or return 0
+  if (pair.liquidityProviderCount.lt(new Decimal(5))) {
+    let reserve0USD = pair.reserve0.times(price0);
+    let reserve1USD = pair.reserve1.times(price1);
+
+    if (WHITELIST.includes(token0.id) && WHITELIST.includes(token1.id)) {
+      if (reserve0USD.plus(reserve1USD).lt(MINIMUM_USD_THRESHOLD_NEW_PAIRS)) {
+        return ZERO_BD;
+      }
+    }
+
+    if (WHITELIST.includes(token0.id) && !WHITELIST.includes(token1.id)) {
+      if (
+        reserve0USD.times(new Decimal("2")).lt(MINIMUM_USD_THRESHOLD_NEW_PAIRS)
+      ) {
+        return ZERO_BD;
+      }
+    }
+
+    if (!WHITELIST.includes(token0.id) && WHITELIST.includes(token1.id)) {
+      if (
+        reserve1USD.times(new Decimal("2")).lt(MINIMUM_USD_THRESHOLD_NEW_PAIRS)
+      ) {
+        return ZERO_BD;
+      }
+    }
+  }
+
+  // both are whitelist tokens, take average of both amounts
+  if (WHITELIST.includes(token0.id) && WHITELIST.includes(token1.id)) {
+    return tokenAmount0
+      .times(price0)
+      .plus(tokenAmount1.times(price1))
+      .div(new Decimal("2"));
+  }
+
+  // take full value of the whitelisted token amount
+  if (WHITELIST.includes(token0.id) && !WHITELIST.includes(token1.id)) {
+    return tokenAmount0.times(price0);
+  }
+
+  // take full value of the whitelisted token amount
+  if (!WHITELIST.includes(token0.id) && WHITELIST.includes(token1.id)) {
+    return tokenAmount1.times(price1);
   }
 
   // neither token is on white list, tracked volume is 0

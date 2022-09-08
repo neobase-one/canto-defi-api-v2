@@ -6,11 +6,6 @@ import provider from "../provider";
 import config from "../config";
 import { Decimal } from "@prisma/client/runtime";
 import {
-  fetchTokenDecimals,
-  fetchTokenSymbol,
-  fetchTokenTotalSupply,
-} from "../utils/token";
-import {
   getBlockTimestamp,
   createUser,
   convertTokenToDecimal,
@@ -26,16 +21,14 @@ import {
   getEthPriceInUSD,
   findEthPerToken,
   getTrackedLiquidityUSD,
+  getTrackedVolumeUSD
 } from "../utils/pricing";
 import BaseV1Pair from "../../abis/BaseV1Pair.json";
 
 import { ADDRESS_ZERO, ZERO_BD, BI_18 } from "../utils/contants";
-import { eventNames } from "process";
-import { privateDecrypt } from "crypto";
-import { LogDescription } from "ethers/lib/utils";
-import { TokenDefinition } from "../utils/tokenDefinition";
 
 export async function handleTransfer(log: providers.Log) {
+  console.log(`parsing: [transfer] ${log.transactionHash}`)
   const event = config.canto.contracts.baseV1Pair.interface.parseLog(log);
 
   // ignore inital transfers for first adds
@@ -147,51 +140,56 @@ export async function handleTransfer(log: providers.Log) {
       },
     });
     let burns = transaction.burns;
-    // let burn:
+
     if (burns.length > 0) {
       const currentBurn = await prisma.burn.findFirstOrThrow({
         where: { id: burns[burns.length - 1].id },
       });
 
-      // TODO: fix this
-      //   if (currentBurn.needsComplete) {
-      //     burn = currentBurn;
-      //   } else {
-      //     burn = {
-      //       id: `${log.transactionHash}-${transaction.burns.length}`,
-      //       transactionId: transaction.id,
-      //       pairId: pair.id,
-      //       liquidity: new Prisma.Decimal(value),
-      //       timestamp: transaction.timestamp,
-      //       needsComplete: false
-      //     }
-      //   }
+      if (currentBurn.needsComplete) {
+        await prisma.burn.create({
+          data: currentBurn
+        })
+      } else {
+        await prisma.burn.create({
+          data: {
+            id: `${log.transactionHash}-${transaction.burns.length}`,
+            transactionId: transaction.id,
+            pairId: pair.id,
+            liquidity: new Prisma.Decimal(value),
+            timestamp: transaction.timestamp,
+            needsComplete: false
+          }
+        })
+      }
+    } else {
+      await prisma.burn.create({
+        data: {
+          id: `${log.transactionHash}-${transaction.burns.length}`,
+          transactionId: transaction.id,
+          pairId: pair.id,
+          liquidity: new Prisma.Decimal(value),
+          timestamp: transaction.timestamp,
+          needsComplete: false
+        }
+      })
+    }
 
-      // } else {
-      //   burn = {
-      //     id: `${log.transactionHash}-${transaction.burns.length}`,
-      //     transactionId: transaction.id,
-      //     pairId: pair.id,
-      //     liquidity: new Prisma.Decimal(value),
-      //     timestamp: transaction.timestamp,
-      //     needsComplete: false
-      //   }
-      // }
-
-      // if this logical burn included a fee mint, account for this
-      // if (
-      //   mints.length !== 0 &&
-      //   !(await isCompleteMint(mints[mints.length - 1].id))
-      // ) {
-
-      //   let mint = await prisma.mint.findFirstOrThrow({where: {id: mints[mints.length - 1].id}})
-      //   burn.feeTo = mint.to;
-      //   burn.feeLiquidity = mint.liquidity;
-
-      //   // remove logical mint
-      //   await prisma.mint.delete({where: {id: mints[mints.length - 1].id}});
-      // }
-      // burn = await prisma.burn.create({data: burn})
+    // if this logical burn included a fee mint, account for this
+    if (
+      mints.length !== 0 &&
+      !(await isCompleteMint(mints[mints.length - 1].id))
+    ) {
+      let mint = await prisma.mint.findFirstOrThrow({where: {id: mints[mints.length - 1].id}})
+      await prisma.burn.update({
+        where: {id: `${log.transactionHash}-${transaction.burns.length}`},
+        data: {
+          feeTo: mint.to,
+          feeLiquidity: mint.liquidity
+        }
+      })
+      // remove logical mint
+      await prisma.mint.delete({where: {id: mints[mints.length - 1].id}});
     }
   }
 
@@ -236,7 +234,7 @@ export async function handleTransfer(log: providers.Log) {
 }
 
 export async function handleSync(log: any) {
-  // console.log("sync")
+  console.log(`parsing: [sync] ${log.transactionHash}`)
   const event = config.canto.contracts.baseV1Pair.interface.parseLog(log);
   const factoryAddress = config.canto.contracts.baseV1Factory.addresses[0];
 
@@ -318,10 +316,10 @@ export async function handleSync(log: any) {
     token1
   );
   if (!bundle.ethPrice.equals(ZERO_BD)) {
-    // trackedLiquidityNOTE = trackedLiquidityUSD.div(bundle.ethPrice);
+    // trackedLiquidityETH = trackedLiquidityUSD.div(bundle.ethPrice);
     trackedLiquidityETH = trackedLiquidityUSD;
   } else {
-    // trackedLiquidityNOTE = ZERO_BD;
+    // trackedLiquidityETH = ZERO_BD;
     trackedLiquidityETH = trackedLiquidityUSD;
   }
 
@@ -368,7 +366,7 @@ export async function handleSync(log: any) {
 }
 
 export async function handleMint(log: providers.Log) {
-  // console.log("mint")
+  console.log(`parsing: [mint] ${log.transactionHash}`)
   const event = config.canto.contracts.baseV1Pair.interface.parseLog(log);
 
   const pair = await prisma.pair.findFirstOrThrow({
@@ -394,7 +392,7 @@ export async function handleMint(log: providers.Log) {
   let token0Amount = await convertTokenToDecimal(event.args.amount0, Number(token0.decimals));
   let token1Amount = await convertTokenToDecimal(event.args.amount1, Number(token1.decimals));
 
-  // get new amount of USD and NOTE for tracking
+  // get new amount of USD and ETH for tracking
   const bundle = await prisma.bundle.findFirstOrThrow({
     where: { id: "1" },
   });
@@ -432,7 +430,7 @@ export async function handleMint(log: providers.Log) {
 }
 
 export async function handleBurn(log: any) {
-  // console.log("burn")
+  console.log(`parsing: [burn] ${log.transactionHash}`)
   const event = config.canto.contracts.baseV1Pair.interface.parseLog(log);
 
   const pair = await prisma.pair.findFirstOrThrow({
@@ -496,6 +494,198 @@ export async function handleBurn(log: any) {
 }
 
 export async function handleSwap(log: any) {
-  // console.log("swap")
+  console.log(`parsing: [swap] ${log.transactionHash}`)
   const event = config.canto.contracts.baseV1Pair.interface.parseLog(log);
+
+  const timestamp = await getBlockTimestamp(log.blockNumber)
+
+  // load
+  let pair = await prisma.pair.findFirstOrThrow({
+    where: { id: ethers.utils.getAddress(log.address) },
+    include: {token0: true, token1: true}
+  });
+  let token0 = pair.token0
+  let token1 = pair.token1
+
+  let amount0In = await convertTokenToDecimal(event.args.amount0In, Number(token0.decimals));
+  let amount1In = await convertTokenToDecimal(event.args.amount1In, Number(token1.decimals));
+  let amount0Out = await convertTokenToDecimal(event.args.amount0Out, Number(token0.decimals));
+  let amount1Out = await convertTokenToDecimal(event.args.amount1Out, Number(token1.decimals));
+
+  // totals for volume updates
+  let amount0Total = amount0Out.plus(amount0In);
+  let amount1Total = amount1Out.plus(amount1In);
+
+  // get new amount of USD and ETH for tracking
+  const bundle = await prisma.bundle.findFirstOrThrow({
+    where: { id: "1" },
+  });
+
+  // get total amounts of derived USD and ETH for tracking
+  let derivedAmountETH = token1.derivedETH
+    .times(amount1Total)
+    .plus(token0.derivedETH.times(amount0Total))
+    .div(new Decimal("2"))
+
+  // let derivedAmountUSD = derivedAmountETH.times(bundle.ethPrice);
+  let derivedAmountUSD = derivedAmountETH;
+
+  // only accounts for volume through white listed tokens
+  let trackedAmountUSD = await getTrackedVolumeUSD(amount0Total,token0,amount1Total,token1,pair);
+
+  let trackedAmountETH: Decimal = trackedAmountUSD;
+
+  if (bundle.ethPrice.equals(ZERO_BD)) {
+    // trackedAmountETH = ZERO_BD;
+    trackedAmountETH = trackedAmountUSD;
+  } else {
+    // trackedAmountETH = trackedAmountUSD.div(bundle.ethPrice);
+    trackedAmountETH = trackedAmountUSD;
+  }
+
+  // update token0 global volume and token liquidity stats
+  token0 = await prisma.token.update({
+    where: {id: pair.token0Id},
+    data: {
+      tradeVolume: {increment: amount0In.plus(amount0Out)},
+      tradeVolumeUSD: {increment: trackedAmountUSD},
+      untrackedVolumeUSD: {increment: derivedAmountUSD},
+      txCount: {increment: 1}
+    }
+  })
+
+  // update token1 global volume and token liquidity stats
+  token1 = await prisma.token.update({
+    where: {id: pair.token1Id},
+    data: {
+      tradeVolume: {increment: amount1In.plus(amount1Out)},
+      tradeVolumeUSD: {increment: trackedAmountUSD},
+      untrackedVolumeUSD: {increment: derivedAmountUSD},
+      txCount: {increment: 1}
+    }
+  })
+
+  // update pair volume data, use tracked amount if we have it as its probably more accurate
+  pair = await prisma.pair.update({
+    where: {id: pair.id},
+    data: {
+      volumeUSD: {increment: trackedAmountUSD},
+      volumeToken0: {increment: amount0Total},
+      volumeToken1: {increment: amount1Total},
+      untrackedVolumeUSD: {increment: derivedAmountUSD},
+      txCount: {increment: 1}
+    },
+    include: {
+      token0: true, token1: true
+    }
+  }) 
+  
+  // update global values, only used tracked amounts for volume
+  await prisma.stableswapFactory.update({
+    where: {id: config.canto.contracts.baseV1Factory.addresses[0]},
+    data: {
+      totalVolumeUSD: {increment: trackedAmountUSD},
+      totalVolumeETH: {increment: trackedAmountETH},
+      untrackedVolumeUSD: {increment: derivedAmountUSD},
+      txCount: {increment: 1}
+    }
+  }) 
+
+  // update transaction
+  const transaction = await prisma.transaction.upsert({
+    where: {
+      id: log.transactionHash,
+    },
+    update: {},
+    create: {
+      id: log.transactionHash,
+      blockNumber: BigInt(log.blockNumber),
+      timestamp: await getBlockTimestamp(log.blockNumber),
+    },
+    include: {
+      mints: true,
+      burns: true,
+      swaps: true
+    },
+  });
+
+  // swaps
+  let swaps = transaction.swaps;
+  const swap = await prisma.swap.create({
+    data: {
+      id: `${log.transactionHash}-${swaps.length}`,
+      transactionId: transaction.id,
+      pairId: pair.id,
+      timestamp: transaction.timestamp,
+      sender: event.args.sender,
+      amount0In: amount0In,
+      amount1In: amount1In,
+      amount0Out: amount0Out,
+      amount1Out: amount1Out,
+      to: event.args.to,
+      // from: event.transaction.from
+      from: event.args.sender,
+      logIndex: Number(log.logIndex),
+      amountUSD: trackedAmountUSD === ZERO_BD ? derivedAmountUSD : trackedAmountUSD
+    }
+  })
+
+  // update day entities
+  let pairDayData = await updatePairDayData(log)
+  let pairHourData = await updatePairHourData(log)
+  let stableswapDayData = await updateFactoryDayData(log)
+  let token0DayData = await updateTokenDayData(token0, log)
+  let token1DayData = await updateTokenDayData(token1, log)
+
+  // swap specific updating
+  await prisma.stableswapDayData.update({
+    where: {id: stableswapDayData.id},
+    data: {
+      dailyVolumeUSD: {increment: trackedAmountUSD},
+      dailyVolumeETH: {increment: trackedAmountETH},
+      dailyVolumeUntracked: {increment: derivedAmountUSD},
+    }
+  })
+
+  // swap specific updating for pair
+  await prisma.pairDayData.update({
+    where: {id: pairDayData.id},
+    data: {
+      dailyVolumeToken0: {increment: amount0Total},
+      dailyVolumeToken1: {increment: amount1Total},
+      dailyVolumeUSD: {increment: trackedAmountUSD},
+    }
+  })
+
+  // update hourly pair data
+  await prisma.pairHourData.update({
+    where: {id: pairHourData.id},
+    data: {
+      hourlyVolumeToken0: {increment: amount0Total},
+      hourlyVolumeToken1: {increment: amount1Total},
+      hourlyVolumeUSD: {increment: trackedAmountUSD}, 
+    }
+  })
+
+  // swap specific updating for token0
+  await prisma.tokenDayData.update({
+    where: {id: token0DayData.id},
+    data: {
+      dailyVolumeToken: {increment: amount0Total},
+      dailyVolumeETH: {increment: amount0Total.times(token0.derivedETH)},
+      // dailyVolumeUSD: {increment: amount0Total.times(token0.derivedETH).times(bundle.ethPrice)},
+      dailyVolumeUSD: {increment: amount0Total.times(token0.derivedETH)},
+    }
+  })
+
+  // swap specific updating
+  await prisma.tokenDayData.update({
+    where: {id: token1DayData.id},
+    data: {
+      dailyVolumeToken: {increment: amount1Total},
+      dailyVolumeETH: {increment: amount1Total.times(token1.derivedETH)},
+      // dailyVolumeUSD: {increment: amount1Total.times(token1.derivedETH).times(bundle.ethPrice)},
+      dailyVolumeUSD: {increment: amount1Total.times(token1.derivedETH)},
+    }
+  })
 }
