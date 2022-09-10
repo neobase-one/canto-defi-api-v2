@@ -32,28 +32,9 @@ async function init() {
 async function main() {
   await init();
   console.log("setup completed\n");
+  console.log("INDEXER ENABLED");
 
-  if (Config.indexer) {
-    console.log("INDEXER ENABLED");
-
-    await indexChain();
-  } else {
-    console.log("API ENABLED");
-
-    const app = express();
-    let server = await apolloLoader();
-    await server.start();
-    server.applyMiddleware({
-      app,
-      path: Config.api.prefix,
-    });
-
-    app.listen({ port: Config.port }, () =>
-      console.log(
-        `🚀 Server ready at http://localhost:${Config.port}${Config.api.prefix}`
-      )
-    );
-  }
+  await indexChain();
 }
 
 main();

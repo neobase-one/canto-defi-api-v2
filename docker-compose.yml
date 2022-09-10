@@ -23,18 +23,30 @@ services:
       - RPC_URL=ws://3.111.45.9:8546
     command: yarn run indexer
 
-  dex-api:
-    build: dex
+  # dex-api:
+  #   build: dex
+  #   environment:
+  #     - DATABASE_URL=postgres://admin:admin@postgres:5432/db
+  #     - RPC_URL=ws://3.111.45.9:8546
+  #   command: yarn run api
+  #   ports:
+  #     - 8080:8080
+
+  lending-indexer:
+    build: lending
+    environment:
+      - DATABASE_URL=postgres://admin:admin@postgres:5432/db
+      - RPC_URL=ws://3.111.45.9:8546
+    command: yarn run indexer
+
+  lending-api:
+    build: lending
     environment:
       - DATABASE_URL=postgres://admin:admin@postgres:5432/db
       - RPC_URL=ws://3.111.45.9:8546
     command: yarn run api
     ports:
       - 8080:8080
-
-  # lending-indexer:
-
-  # lending-api:
 
 volumes:
   db-data:

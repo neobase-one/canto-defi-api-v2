@@ -55,7 +55,7 @@ export class MarketResolver {
   @Query((returns) => [Market])
   async markets(@Arg("input") input: MarketsInput) {
     let where = undefined
-    console.log(input)
+    // console.log(input)
     if (input.id !== undefined) {
       where = {
         id: {
@@ -69,7 +69,7 @@ export class MarketResolver {
         skip: input.skip,
         take: input.first
     });
-    console.log(markets)
+    // console.log(markets)
 
     // todo: APY based sorting for: supply, borrow
 

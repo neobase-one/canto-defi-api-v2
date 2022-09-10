@@ -105,7 +105,7 @@ export async function handleBorrow(log: any) {
 
 export async function handleRepayBorrow(log: any) {
   console.log("cToken", "RepayBorrow", parseInt(log.blockNumber, 16), log.transactionHash);
-  console.log(log);
+  // console.log(log);
   const event = Config.canto.contracts.cToken.interface.parseLog(log);
   // console.log(event);
 
@@ -201,7 +201,7 @@ export async function handleRepayBorrow(log: any) {
 
 export async function handleLiquidateBorrow(log: any) {
   console.log("cToken", "LiquidateBorrow", parseInt(log.blockNumber, 16), log.transactionHash);
-  console.log(log);
+  // console.log(log);
   const event = Config.canto.contracts.cToken.interface.parseLog(log);
   // console.log(event);
 
@@ -236,7 +236,7 @@ export async function handleLiquidateBorrow(log: any) {
 
 export async function handleAccrueInterest(log: any) {
   console.log("cToken", "AccrueInterest", parseInt(log.blockNumber, 16), log.transactionHash);
-  console.log(log);
+  // console.log(log);
   const event = Config.canto.contracts.cToken.interface.parseLog(log);
   // console.log(event);
 
@@ -248,7 +248,7 @@ export async function handleAccrueInterest(log: any) {
 
 export async function handleNewReserveFactor(log: any) {
   console.log("cToken", "NewReserveFactor", parseInt(log.blockNumber, 16), log.transactionHash);
-  console.log(log);
+  // console.log(log);
   const event = Config.canto.contracts.cToken.interface.parseLog(log);
   // console.log(event);
 
@@ -267,7 +267,7 @@ export async function handleNewReserveFactor(log: any) {
 
 export async function handleTransfer(log: any) {
   console.log("cToken", "Transfer", parseInt(log.blockNumber, 16), log.transactionHash);
-  console.log(log);
+  // console.log(log);
   const event = Config.canto.contracts.cToken.interface.parseLog(log);
   // console.log(event);
 
@@ -442,7 +442,7 @@ export async function handleTransfer(log: any) {
 
 export async function handleNewMarketInterestRateModel(log: any) {
   console.log("cToken", "NewMarketInterestRateModel", parseInt(log.blockNumber, 16), log.transactionHash);
-  console.log(log);
+  // console.log(log);
   const event = Config.canto.contracts.cToken.interface.parseLog(log);
   // console.log(event);
 
