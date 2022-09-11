@@ -114,7 +114,7 @@ export async function handleTransfer(log: providers.Log) {
         liquidity: value,
         timestamp: transaction.timestamp,
         to: event.args.to,
-        sender: event.args.sender,
+        sender: event.args.from,
         needsComplete: true,
       },
     });
@@ -149,11 +149,7 @@ export async function handleTransfer(log: providers.Log) {
         where: { id: burns[burns.length - 1].id },
       });
 
-      if (currentBurn.needsComplete) {
-        await prisma.burn.create({
-          data: currentBurn,
-        });
-      } else {
+      if (!currentBurn.needsComplete) {
         await prisma.burn.create({
           data: {
             id: `${log.transactionHash}-${transaction.burns.length}`,
