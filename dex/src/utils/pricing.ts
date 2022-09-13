@@ -14,14 +14,14 @@ export async function getEthPriceInUSD() {
   }); // token1 = usdc
 
   if (usdtPair !== null && usdcPair !== null) {
-    let totalLiquidityETH = usdtPair.reserve0.plus(usdcPair.reserve0);
+    let totalLiquidityNOTE = usdtPair.reserve0.plus(usdcPair.reserve0);
 
-    if (totalLiquidityETH.equals(ZERO_BD)) {
+    if (totalLiquidityNOTE.equals(ZERO_BD)) {
       return ZERO_BD;
     }
 
-    let usdtWeight = usdtPair.reserve0.div(totalLiquidityETH);
-    let usdcWeight = usdcPair.reserve0.div(totalLiquidityETH);
+    let usdtWeight = usdtPair.reserve0.div(totalLiquidityNOTE);
+    let usdcWeight = usdcPair.reserve0.div(totalLiquidityNOTE);
 
     return usdtPair.token0Price
       .times(usdtWeight)
@@ -63,21 +63,21 @@ export async function findEthPerToken(token: Token) {
       });
       if (
         pair.token0Id == token.id
-        // && pair.reserveETH.gt(config.canto.MINIMUM_LIQUIDITY_THRESHOLD_ETH)
+        // && pair.reserveNOTE.gt(config.canto.MINIMUM_LIQUIDITY_THRESHOLD_NOTE)
       ) {
         const token1 = await prisma.token.findFirstOrThrow({
           where: { id: pair.token1Id },
         });
-        return pair.token1Price.times(token1.derivedETH); // return token1 per our token * Eth per token 1
+        return pair.token1Price.times(token1.derivedNOTE); // return token1 per our token * Eth per token 1
       }
       if (
         pair.token1Id == token.id
-        // && pair.reserveETH.gt(config.canto.MINIMUM_LIQUIDITY_THRESHOLD_ETH)
+        // && pair.reserveNOTE.gt(config.canto.MINIMUM_LIQUIDITY_THRESHOLD_NOTE)
       ) {
         const token0 = await prisma.token.findFirstOrThrow({
           where: { id: pair.token0Id },
         });
-        return pair.token0Price.times(token0.derivedETH); // return token1 per our token * Eth per token 1
+        return pair.token0Price.times(token0.derivedNOTE); // return token1 per our token * Eth per token 1
       }
     }
   }
@@ -101,10 +101,10 @@ export async function getTrackedLiquidityUSD(
   const bundle = await prisma.bundle.findFirstOrThrow({
     where: { id: "1" },
   });
-  // let price0 = token0.derivedETH.times(bundle.ethPrice);
-  let price0 = token0.derivedETH;
-  // let price1 = token1.derivedETH.times(bundle.ethPrice);
-  let price1 = token1.derivedETH;
+  // let price0 = token0.derivedNOTE.times(bundle.notePrice);
+  let price0 = token0.derivedNOTE;
+  // let price1 = token1.derivedNOTE.times(bundle.notePrice);
+  let price1 = token1.derivedNOTE;
 
   // both are whitelist tokens, take average of both amounts
   if (WHITELIST.includes(token0.id) && WHITELIST.includes(token1.id)) {
@@ -142,10 +142,10 @@ export async function getTrackedVolumeUSD(
     where: { id: "1" },
   });
 
-  // let price0 = token0.derivedETH.times(bundle.ethPrice));
-  let price0 = token0.derivedETH;
-  // let price1 = token1.derivedETH.times(bundle.ethPrice);
-  let price1 = token1.derivedETH;
+  // let price0 = token0.derivedNOTE.times(bundle.notePrice));
+  let price0 = token0.derivedNOTE;
+  // let price1 = token1.derivedNOTE.times(bundle.notePrice);
+  let price1 = token1.derivedNOTE;
 
   // dont count tracked volume on these pairs - usually rebass tokens
   if (UNTRACKED_PAIRS.includes(pair.id)) {

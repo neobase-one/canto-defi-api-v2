@@ -61,9 +61,4 @@ export class Pair {
 
   @Field((type) => DecimalScalar)
   liquidityProviderCount: Decimal;
-
-    // async getToken(id: string): Promise<Token> {
-    // const token = await TokenModel.find({ id: id });
-    // return token[0].toGenerated();
-  // }
 }

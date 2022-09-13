@@ -45,5 +45,4 @@ export class PairDayData {
 
   @Field((type) => DecimalScalar)
   dailyTxns: Decimal;
-
 }

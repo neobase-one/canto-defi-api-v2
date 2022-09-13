@@ -11,10 +11,10 @@ CREATE TABLE "StableswapFactory" (
     "id" TEXT NOT NULL,
     "pairCount" INTEGER NOT NULL DEFAULT 0,
     "totalVolumeUSD" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "totalVolumeETH" DECIMAL(65,30) NOT NULL DEFAULT 0,
+    "totalVolumeNOTE" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "untrackedVolumeUSD" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "totalLiquidityUSD" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "totalLiquidityETH" DECIMAL(65,30) NOT NULL DEFAULT 0,
+    "totalLiquidityNOTE" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "txCount" BIGINT NOT NULL DEFAULT 0,
 
     CONSTRAINT "StableswapFactory_pkey" PRIMARY KEY ("id")
@@ -32,7 +32,7 @@ CREATE TABLE "Token" (
     "untrackedVolumeUSD" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "txCount" BIGINT NOT NULL DEFAULT 0,
     "totalLiquidity" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "derivedETH" DECIMAL(65,30) NOT NULL DEFAULT 0,
+    "derivedNOTE" DECIMAL(65,30) NOT NULL DEFAULT 0,
 
     CONSTRAINT "Token_pkey" PRIMARY KEY ("id")
 );
@@ -45,9 +45,9 @@ CREATE TABLE "Pair" (
     "reserve0" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "reserve1" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "totalSupply" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "reserveETH" DECIMAL(65,30) NOT NULL DEFAULT 0,
+    "reserveNOTE" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "reserveUSD" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "trackedReserveETH" DECIMAL(65,30) NOT NULL DEFAULT 0,
+    "trackedReserveNOTE" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "token0Price" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "token1Price" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "volumeToken0" DECIMAL(65,30) NOT NULL DEFAULT 0,
@@ -169,7 +169,7 @@ CREATE TABLE "Swap" (
 -- CreateTable
 CREATE TABLE "Bundle" (
     "id" TEXT NOT NULL,
-    "ethPrice" DECIMAL(65,30) NOT NULL DEFAULT 0,
+    "notePrice" DECIMAL(65,30) NOT NULL DEFAULT 0,
 
     CONSTRAINT "Bundle_pkey" PRIMARY KEY ("id")
 );
@@ -178,11 +178,11 @@ CREATE TABLE "Bundle" (
 CREATE TABLE "StableswapDayData" (
     "id" TEXT NOT NULL,
     "date" INTEGER NOT NULL,
-    "dailyVolumeETH" DECIMAL(65,30) NOT NULL DEFAULT 0,
+    "dailyVolumeNOTE" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "dailyVolumeUSD" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "dailyVolumeUntracked" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "totalVolumeETH" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "totalLiquidityETH" DECIMAL(65,30) NOT NULL,
+    "totalVolumeNOTE" DECIMAL(65,30) NOT NULL DEFAULT 0,
+    "totalLiquidityNOTE" DECIMAL(65,30) NOT NULL,
     "totalVolumeUSD" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "totalLiquidityUSD" DECIMAL(65,30) NOT NULL,
     "txCount" BIGINT NOT NULL,
@@ -232,11 +232,11 @@ CREATE TABLE "TokenDayData" (
     "date" INTEGER NOT NULL,
     "tokenId" TEXT NOT NULL,
     "dailyVolumeToken" DECIMAL(65,30) NOT NULL DEFAULT 0,
-    "dailyVolumeETH" DECIMAL(65,30) NOT NULL DEFAULT 0,
+    "dailyVolumeNOTE" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "dailyVolumeUSD" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "dailyTxns" BIGINT NOT NULL DEFAULT 0,
     "totalLiquidityToken" DECIMAL(65,30) NOT NULL,
-    "totalLiquidityETH" DECIMAL(65,30) NOT NULL,
+    "totalLiquidityNOTE" DECIMAL(65,30) NOT NULL,
     "totalLiquidityUSD" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "priceUSD" DECIMAL(65,30) NOT NULL,
 

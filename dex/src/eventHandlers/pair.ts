@@ -104,7 +104,7 @@ export async function handleTransfer(log: providers.Log) {
     }
   }
 
-  // case: direct send first on ETH withdrawls
+  // case: direct send first on NOTE withdrawls
   if (pair.id == event.args.to) {
     await prisma.burn.create({
       data: {
@@ -250,7 +250,7 @@ export async function handleSync(log: any) {
       id: factoryAddress,
     },
     data: {
-      totalLiquidityETH: { decrement: pair.trackedReserveETH },
+      totalLiquidityNOTE: { decrement: pair.trackedReserveNOTE },
     },
   });
 
@@ -291,47 +291,47 @@ export async function handleSync(log: any) {
     data: pairUpdate,
   });
 
-  // update ETH price now that reserves could have changed
+  // update NOTE price now that reserves could have changed
   let bundle = await prisma.bundle.update({
     where: { id: "1" },
-    data: { ethPrice: await getEthPriceInUSD() },
+    data: { notePrice: await getEthPriceInUSD() },
   });
 
-  // update derived ETH values
+  // update derived NOTE values
   token0 = await prisma.token.update({
     where: { id: token0.id },
-    data: { derivedETH: await findEthPerToken(token0) },
+    data: { derivedNOTE: await findEthPerToken(token0) },
   });
 
   token1 = await prisma.token.update({
     where: { id: token1.id },
-    data: { derivedETH: await findEthPerToken(token1) },
+    data: { derivedNOTE: await findEthPerToken(token1) },
   });
 
   // get tracked liquidity - will be 0 if neither in whitelist
-  let trackedLiquidityETH: Decimal;
+  let trackedLiquidityNOTE: Decimal;
   let trackedLiquidityUSD = await getTrackedLiquidityUSD(
     pair.reserve0,
     token0,
     pair.reserve1,
     token1
   );
-  if (!bundle.ethPrice.equals(ZERO_BD)) {
-    // trackedLiquidityETH = trackedLiquidityUSD.div(bundle.ethPrice);
-    trackedLiquidityETH = trackedLiquidityUSD;
+  if (!bundle.notePrice.equals(ZERO_BD)) {
+    // trackedLiquidityNOTE = trackedLiquidityUSD.div(bundle.notePrice);
+    trackedLiquidityNOTE = trackedLiquidityUSD;
   } else {
-    // trackedLiquidityETH = ZERO_BD;
-    trackedLiquidityETH = trackedLiquidityUSD;
+    // trackedLiquidityNOTE = ZERO_BD;
+    trackedLiquidityNOTE = trackedLiquidityUSD;
   }
 
   pair = await prisma.pair.update({
     where: { id: pair.id },
     data: {
-      trackedReserveETH: trackedLiquidityETH,
-      reserveETH: pair.reserve0
-        .times(token0.derivedETH)
-        .plus(pair.reserve1.times(token1.derivedETH)),
-      // reserveUSD: pair.reserveUSD.times(bundle.ethPrice)
+      trackedReserveNOTE: trackedLiquidityNOTE,
+      reserveNOTE: pair.reserve0
+        .times(token0.derivedNOTE)
+        .plus(pair.reserve1.times(token1.derivedNOTE)),
+      // reserveUSD: pair.reserveUSD.times(bundle.notePrice)
       reserveUSD: pair.reserveUSD,
     },
   });
@@ -342,7 +342,7 @@ export async function handleSync(log: any) {
       id: config.canto.contracts.baseV1Factory.addresses[0],
     },
     data: {
-      totalLiquidityETH: { increment: trackedLiquidityETH },
+      totalLiquidityNOTE: { increment: trackedLiquidityNOTE },
     },
   });
   await prisma.stableswapFactory.update({
@@ -350,8 +350,8 @@ export async function handleSync(log: any) {
       id: config.canto.contracts.baseV1Factory.addresses[0],
     },
     data: {
-      // totalLiquidityUSD: factory.totalLiquidityETH.times(bundle.ethPrice),
-      totalLiquidityUSD: factory.totalLiquidityETH,
+      // totalLiquidityUSD: factory.totalLiquidityNOTE.times(bundle.notePrice),
+      totalLiquidityUSD: factory.totalLiquidityNOTE,
     },
   });
 
@@ -405,15 +405,15 @@ export async function handleMint(log: providers.Log) {
     Number(token1.decimals)
   );
 
-  // get new amount of USD and ETH for tracking
+  // get new amount of USD and NOTE for tracking
   const bundle = await prisma.bundle.findFirstOrThrow({
     where: { id: "1" },
   });
-  let amountTotalETH = token1.derivedETH
+  let amountTotalNOTE = token1.derivedNOTE
     .times(token1Amount)
-    .plus(token0.derivedETH.times(token0Amount));
-  // let amountTotalUSD = amountTotalETH.times(bundle.ethPrice);
-  let amountTotalUSD = amountTotalETH;
+    .plus(token0.derivedNOTE.times(token0Amount));
+  // let amountTotalUSD = amountTotalNOTE.times(bundle.notePrice);
+  let amountTotalUSD = amountTotalNOTE;
 
   // update txn counts
   await prisma.pair.update({
@@ -491,15 +491,15 @@ export async function handleBurn(log: any) {
     Number(token1.decimals)
   );
 
-  // get new amount of USD and ETH for tracking
+  // get new amount of USD and NOTE for tracking
   const bundle = await prisma.bundle.findFirstOrThrow({
     where: { id: "1" },
   });
-  let amountTotalETH = token1.derivedETH
+  let amountTotalNOTE = token1.derivedNOTE
     .times(token1Amount)
-    .plus(token0.derivedETH.times(token0Amount));
-  // let amountTotalUSD = amountTotalETH.times(bundle.ethPrice);
-  let amountTotalUSD = amountTotalETH;
+    .plus(token0.derivedNOTE.times(token0Amount));
+  // let amountTotalUSD = amountTotalNOTE.times(bundle.notePrice);
+  let amountTotalUSD = amountTotalNOTE;
 
   // update txn counts
   await prisma.pair.update({
@@ -572,19 +572,19 @@ export async function handleSwap(log: any) {
   let amount0Total = amount0Out.plus(amount0In);
   let amount1Total = amount1Out.plus(amount1In);
 
-  // get new amount of USD and ETH for tracking
+  // get new amount of USD and NOTE for tracking
   const bundle = await prisma.bundle.findFirstOrThrow({
     where: { id: "1" },
   });
 
-  // get total amounts of derived USD and ETH for tracking
-  let derivedAmountETH = token1.derivedETH
+  // get total amounts of derived USD and NOTE for tracking
+  let derivedAmountNOTE = token1.derivedNOTE
     .times(amount1Total)
-    .plus(token0.derivedETH.times(amount0Total))
+    .plus(token0.derivedNOTE.times(amount0Total))
     .div(new Decimal("2"));
 
-  // let derivedAmountUSD = derivedAmountETH.times(bundle.ethPrice);
-  let derivedAmountUSD = derivedAmountETH;
+  // let derivedAmountUSD = derivedAmountNOTE.times(bundle.notePrice);
+  let derivedAmountUSD = derivedAmountNOTE;
 
   // only accounts for volume through white listed tokens
   let trackedAmountUSD = await getTrackedVolumeUSD(
@@ -595,14 +595,14 @@ export async function handleSwap(log: any) {
     pair
   );
 
-  let trackedAmountETH: Decimal = trackedAmountUSD;
+  let trackedAmountNOTE: Decimal = trackedAmountUSD;
 
-  if (bundle.ethPrice.equals(ZERO_BD)) {
-    // trackedAmountETH = ZERO_BD;
-    trackedAmountETH = trackedAmountUSD;
+  if (bundle.notePrice.equals(ZERO_BD)) {
+    // trackedAmountNOTE = ZERO_BD;
+    trackedAmountNOTE = trackedAmountUSD;
   } else {
-    // trackedAmountETH = trackedAmountUSD.div(bundle.ethPrice);
-    trackedAmountETH = trackedAmountUSD;
+    // trackedAmountNOTE = trackedAmountUSD.div(bundle.notePrice);
+    trackedAmountNOTE = trackedAmountUSD;
   }
 
   // update token0 global volume and token liquidity stats
@@ -648,7 +648,7 @@ export async function handleSwap(log: any) {
     where: { id: config.canto.contracts.baseV1Factory.addresses[0] },
     data: {
       totalVolumeUSD: { increment: trackedAmountUSD },
-      totalVolumeETH: { increment: trackedAmountETH },
+      totalVolumeNOTE: { increment: trackedAmountNOTE },
       untrackedVolumeUSD: { increment: derivedAmountUSD },
       txCount: { increment: 1 },
     },
@@ -706,7 +706,7 @@ export async function handleSwap(log: any) {
     where: { id: stableswapDayData.id },
     data: {
       dailyVolumeUSD: { increment: trackedAmountUSD },
-      dailyVolumeETH: { increment: trackedAmountETH },
+      dailyVolumeNOTE: { increment: trackedAmountNOTE },
       dailyVolumeUntracked: { increment: derivedAmountUSD },
     },
   });
@@ -736,9 +736,9 @@ export async function handleSwap(log: any) {
     where: { id: token0DayData.id },
     data: {
       dailyVolumeToken: { increment: amount0Total },
-      dailyVolumeETH: { increment: amount0Total.times(token0.derivedETH) },
-      // dailyVolumeUSD: {increment: amount0Total.times(token0.derivedETH).times(bundle.ethPrice)},
-      dailyVolumeUSD: { increment: amount0Total.times(token0.derivedETH) },
+      dailyVolumeNOTE: { increment: amount0Total.times(token0.derivedNOTE) },
+      // dailyVolumeUSD: {increment: amount0Total.times(token0.derivedNOTE).times(bundle.notePrice)},
+      dailyVolumeUSD: { increment: amount0Total.times(token0.derivedNOTE) },
     },
   });
 
@@ -747,9 +747,9 @@ export async function handleSwap(log: any) {
     where: { id: token1DayData.id },
     data: {
       dailyVolumeToken: { increment: amount1Total },
-      dailyVolumeETH: { increment: amount1Total.times(token1.derivedETH) },
-      // dailyVolumeUSD: {increment: amount1Total.times(token1.derivedETH).times(bundle.ethPrice)},
-      dailyVolumeUSD: { increment: amount1Total.times(token1.derivedETH) },
+      dailyVolumeNOTE: { increment: amount1Total.times(token1.derivedNOTE) },
+      // dailyVolumeUSD: {increment: amount1Total.times(token1.derivedNOTE).times(bundle.notePrice)},
+      dailyVolumeUSD: { increment: amount1Total.times(token1.derivedNOTE) },
     },
   });
 }

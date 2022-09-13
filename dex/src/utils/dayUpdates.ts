@@ -26,12 +26,12 @@ export async function updateFactoryDayData(event: providers.Log) {
     create: {
       id: dayId.toString(),
       date: dayStartTimestamp,
-      totalLiquidityETH: factory.totalLiquidityETH,
+      totalLiquidityNOTE: factory.totalLiquidityNOTE,
       totalLiquidityUSD: factory.totalLiquidityUSD,
       txCount: factory.txCount,
     },
     update: {
-      totalLiquidityETH: factory.totalLiquidityETH,
+      totalLiquidityNOTE: factory.totalLiquidityNOTE,
       totalLiquidityUSD: factory.totalLiquidityUSD,
       txCount: factory.txCount,
     },
@@ -134,20 +134,20 @@ export async function updateTokenDayData(token: Token, event: providers.Log) {
       id: tokenDayId,
       date: dayStartTimestamp,
       tokenId: token.id,
-      // priceUSD: token.derivedETH.times(bundle.ethPrice),
-      priceUSD: token.derivedETH,
+      // priceUSD: token.derivedNOTE.times(bundle.notePrice),
+      priceUSD: token.derivedNOTE,
       totalLiquidityToken: token.totalLiquidity,
-      totalLiquidityETH: token.totalLiquidity.times(token.derivedETH),
-      // totalLiquidityUSD: token.totalLiquidity.times(token.derivedETH).times(bundle.ethPrice)
-      totalLiquidityUSD: token.totalLiquidity.times(token.derivedETH),
+      totalLiquidityNOTE: token.totalLiquidity.times(token.derivedNOTE),
+      // totalLiquidityUSD: token.totalLiquidity.times(token.derivedNOTE).times(bundle.notePrice)
+      totalLiquidityUSD: token.totalLiquidity.times(token.derivedNOTE),
       dailyTxns: 1,
     },
     update: {
-      priceUSD: token.derivedETH,
+      priceUSD: token.derivedNOTE,
       totalLiquidityToken: token.totalLiquidity,
-      totalLiquidityETH: token.totalLiquidity.times(token.derivedETH),
-      // totalLiquidityUSD: token.totalLiquidity.times(token.derivedETH).times(bundle.ethPrice)
-      totalLiquidityUSD: token.totalLiquidity.times(token.derivedETH),
+      totalLiquidityNOTE: token.totalLiquidity.times(token.derivedNOTE),
+      // totalLiquidityUSD: token.totalLiquidity.times(token.derivedNOTE).times(bundle.notePrice)
+      totalLiquidityUSD: token.totalLiquidity.times(token.derivedNOTE),
       dailyTxns: { increment: 1 },
     },
   });

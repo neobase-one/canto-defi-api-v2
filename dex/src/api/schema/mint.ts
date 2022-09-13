@@ -45,9 +45,4 @@ export class Mint {
 
   @Field((type) => String)
   feeTo: string;
-
-  // async getPair(id: string): Promise<Pair> {
-  //   const pair = await PairModel.find({ id: id });
-  //   return pair[0].toGenerated();
-  // }
 }
