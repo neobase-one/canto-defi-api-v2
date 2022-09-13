@@ -2,6 +2,7 @@ import Decimal from "decimal.js";
 import { Field, ID, ObjectType } from "type-graphql";
 import { DecimalScalar } from "./decimalScalar";
 import { Pair } from "./pair";
+import BigInt from 'graphql-bigint';
 
 // graphql return object
 @ObjectType()
@@ -36,7 +37,7 @@ export class PairHourData {
   @Field((type) => DecimalScalar)
   hourlyVolumeUSD: Decimal;
 
-  @Field((type) => DecimalScalar)
-  hourlyTxns: Decimal;
+  @Field((type) => BigInt)
+  hourlyTxns: BigInt;
 
 }

@@ -1,6 +1,7 @@
 import Decimal from "decimal.js";
 import { Field, ID, ObjectType } from "type-graphql";
 import { DecimalScalar } from "./decimalScalar";
+import BigInt from 'graphql-bigint';
 
 @ObjectType()
 export class StableswapDayData {
@@ -31,6 +32,6 @@ export class StableswapDayData {
   @Field((type) => DecimalScalar, { nullable: true })
   totalLiquidityUSD: Decimal;
 
-  @Field((type) => DecimalScalar, { nullable: true })
-  txCount: Decimal;
+  @Field((type) => BigInt, { nullable: true })
+  txCount: BigInt;
 }

@@ -2,6 +2,7 @@ import Decimal from "decimal.js";
 import { Field, ID, ObjectType } from "type-graphql";
 import { DecimalScalar } from "./decimalScalar";
 import { Token } from "./token";
+import BigInt from 'graphql-bigint';
 
 @ObjectType()
 export class TokenDayData {
@@ -23,8 +24,8 @@ export class TokenDayData {
   @Field((type) => DecimalScalar)
   dailyVolumeUSD: Decimal;
 
-  @Field((type) => DecimalScalar)
-  dailyTxns: Decimal;
+  @Field((type) => BigInt)
+  dailyTxns: BigInt;
 
   @Field((type) => DecimalScalar)
   totalLiquidityToken: Decimal;

@@ -1,6 +1,7 @@
 import Decimal from "decimal.js";
 import { Field, ID, Int, ObjectType } from "type-graphql";
 import { DecimalScalar } from "./decimalScalar";
+import BigInt from 'graphql-bigint';
 
 @ObjectType()
 export class Token {
@@ -13,11 +14,11 @@ export class Token {
   @Field((type) => String, { nullable: true })
   symbol: string;
 
-  @Field((type) => Int, { nullable: true })
-  decimals: number;
+  @Field((type) => BigInt, { nullable: true })
+  decimals: BigInt;
 
-  @Field((type) => DecimalScalar, { nullable: true })
-  totalSupply: Decimal;
+  @Field((type) => BigInt, { nullable: true })
+  totalSupply: BigInt;
 
   @Field((type) => DecimalScalar, { nullable: true })
   tradeVolume: Decimal;
@@ -28,8 +29,8 @@ export class Token {
   @Field((type) => DecimalScalar, { nullable: true })
   untrackedVolumeUSD: Decimal;
 
-  @Field((type) => DecimalScalar, { nullable: true })
-  txCount: Decimal;
+  @Field((type) => BigInt, { nullable: true })
+  txCount: BigInt;
 
   @Field((type) => DecimalScalar, { nullable: true })
   totalLiquidity: Decimal;

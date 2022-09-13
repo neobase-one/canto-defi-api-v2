@@ -3,6 +3,7 @@ import { Field, ID, ObjectType } from "type-graphql";
 import { DecimalScalar } from "./decimalScalar";
 import { Pair } from "./pair";
 import { Transaction } from "./transaction";
+import BigInt from 'graphql-bigint';
 
 @ObjectType()
 export class Swap {
@@ -12,8 +13,8 @@ export class Swap {
   @Field((type) => Transaction)
   transaction: Transaction; // todo: Ref
 
-  @Field((type) => DecimalScalar)
-  timestamp: Decimal;
+  @Field((type) => BigInt)
+  timestamp: BigInt;
 
   @Field((type) => Pair)
   pair: Pair; // todo: Ref

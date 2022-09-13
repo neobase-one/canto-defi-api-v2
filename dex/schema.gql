@@ -26,11 +26,11 @@ type Burn {
   feeTo: String!
   id: ID!
   liquidity: Decimal!
-  logIndex: Decimal!
+  logIndex: BigInt!
   needsComplete: Boolean!
   pair: Pair!
   sender: String!
-  timestamp: Decimal!
+  timestamp: BigInt!
   to: String!
   transaction: Transaction!
 }
@@ -98,10 +98,10 @@ type Mint {
   feeTo: String!
   id: ID!
   liquidity: Decimal!
-  logIndex: Decimal!
+  logIndex: BigInt!
   pair: Pair!
   sender: String!
-  timestamp: Decimal!
+  timestamp: BigInt!
   to: String!
   transaction: Transaction!
 }
@@ -116,8 +116,8 @@ input MintsInput {
 }
 
 type Pair {
-  createdAtBlockNumber: Decimal!
-  createdAtTimestamp: Decimal!
+  createdAtBlockNumber: BigInt!
+  createdAtTimestamp: BigInt!
   id: ID!
   liquidityProviderCount: Decimal!
   reserve0: Decimal!
@@ -130,7 +130,7 @@ type Pair {
   token1Price: Decimal!
   totalSupply: Decimal!
   trackedReserveNOTE: Decimal!
-  txCount: Decimal!
+  txCount: BigInt!
   untrackedVolumeUSD: Decimal!
   volumeToken0: Decimal!
   volumeToken1: Decimal!
@@ -176,7 +176,7 @@ type StableswapDayData {
   totalLiquidityUSD: Decimal
   totalVolumeNOTE: Decimal
   totalVolumeUSD: Decimal
-  txCount: Decimal
+  txCount: BigInt
 }
 
 type StableswapFactory {
@@ -186,7 +186,7 @@ type StableswapFactory {
   totalLiquidityUSD: Decimal
   totalVolumeNOTE: Decimal
   totalVolumeUSD: Decimal
-  txCount: Decimal
+  txCount: BigInt
   untrackedVolumeUSD: Decimal
 }
 
@@ -207,7 +207,7 @@ type Swap {
   logIndex: Decimal!
   pair: Pair!
   sender: String!
-  timestamp: Decimal!
+  timestamp: BigInt!
   to: String!
   transaction: Transaction!
 }
@@ -221,21 +221,21 @@ input SwapsInput {
 }
 
 type Token {
-  decimals: Int
+  decimals: BigInt
   derivedNOTE: Decimal
   id: ID!
   name: String
   symbol: String
   totalLiquidity: Decimal
-  totalSupply: Decimal
+  totalSupply: BigInt
   tradeVolume: Decimal
   tradeVolumeUSD: Decimal
-  txCount: Decimal
+  txCount: BigInt
   untrackedVolumeUSD: Decimal
 }
 
 type TokenDayData {
-  dailyTxns: Decimal!
+  dailyTxns: BigInt!
   dailyVolumeNOTE: Decimal!
   dailyVolumeToken: Decimal!
   dailyVolumeUSD: Decimal!

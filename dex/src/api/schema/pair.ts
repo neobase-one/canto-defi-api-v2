@@ -2,6 +2,7 @@ import Decimal from "decimal.js";
 import { Field, ID, ObjectType } from "type-graphql";
 import { DecimalScalar } from "./decimalScalar";
 import { Token } from "./token";
+import BigInt from 'graphql-bigint';
 
 @ObjectType()
 export class Pair {
@@ -50,14 +51,14 @@ export class Pair {
   @Field((type) => DecimalScalar)
   untrackedVolumeUSD: Decimal;
 
-  @Field((type) => DecimalScalar)
-  txCount: Decimal;
+  @Field((type) => BigInt)
+  txCount: BigInt;
 
-  @Field((type) => DecimalScalar)
-  createdAtTimestamp: Decimal;
+  @Field((type) => BigInt)
+  createdAtTimestamp: BigInt;
 
-  @Field((type) => DecimalScalar)
-  createdAtBlockNumber: Decimal;
+  @Field((type) => BigInt)
+  createdAtBlockNumber: BigInt;
 
   @Field((type) => DecimalScalar)
   liquidityProviderCount: Decimal;

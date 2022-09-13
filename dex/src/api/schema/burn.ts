@@ -3,6 +3,7 @@ import { Field, ID, ObjectType } from "type-graphql";
 import { DecimalScalar } from "./decimalScalar";
 import { Pair} from "./pair";
 import { Transaction } from "./transaction";
+import BigInt from 'graphql-bigint';
 
 @ObjectType()
 export class Burn {
@@ -12,8 +13,8 @@ export class Burn {
   @Field((type) => Transaction)
   transaction: string; // todo: Ref
 
-  @Field((type) => DecimalScalar)
-  timestamp: Decimal;
+  @Field((type) => BigInt)
+  timestamp: BigInt;
 
   @Field((type) => Pair)
   pair: Pair; // todo: Ref
@@ -27,8 +28,8 @@ export class Burn {
   @Field((type) => DecimalScalar)
   amount1: Decimal;
 
-  @Field((type) => DecimalScalar)
-  logIndex: Decimal;
+  @Field((type) => BigInt)
+  logIndex: BigInt;
 
   @Field((type) => DecimalScalar)
   amountUSD: Decimal;
@@ -48,10 +49,4 @@ export class Burn {
 
   @Field((type) => String)
   feeTo: string;
-
-  // async getPair(id: string): Promise<Pair> {
-  //   const pair = await PairModel.find({ id: id });
-  //   return pair[0].toGenerated();
-  // }
-
 }
