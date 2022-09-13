@@ -7,7 +7,7 @@ import { LiquidityPosition } from "../schema/liquidityPosition";
 export class LiquidityPositionsResolver {
     @Query(returns => [LiquidityPosition])
     async liquidityPositions(@Arg("input") input: LiquidityPositionsInput) {
-        const lps = prisma.liquidityPosition.findMany( {where: {userId: input.user}})
+        const lps = prisma.liquidityPosition.findMany( {where: {userId: input.user}, include: {user: true, pair: true}})
         return lps;
     }
 }

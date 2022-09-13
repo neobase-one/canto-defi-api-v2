@@ -20,7 +20,10 @@ export class TokenDayDatasResolver {
           [input.orderBy.trim()]: od
         },
         take: input.first,
-        skip: input.skip
+        skip: input.skip,
+        include: {
+          token: true
+        }
       });
       return tokenDayDatas;
     } else {
@@ -32,7 +35,10 @@ export class TokenDayDatasResolver {
           [input.orderBy.trim()]: od
         },
         take: input.first,
-        skip: input.skip
+        skip: input.skip,
+        include: {
+          token: true
+        }
       }); 
       return tokenDayDatas;
     }

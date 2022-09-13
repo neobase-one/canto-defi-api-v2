@@ -19,17 +19,26 @@ export class BurnResolver {
         orderBy: {
           [input.orderBy.trim()]: od
         },
-        take: input.first 
+        take: input.first,
+        include: {
+          pair: true
+        } 
       });
       return burns;
     } else if (input.pair !== undefined && input.to !== undefined) {
-      const burns = await prisma.burn.findMany({where: {to: input.to, pairId: input.pair}})
+      const burns = await prisma.burn.findMany({where: {to: input.to, pairId: input.pair}, include: {
+        pair: true
+      } })
       return burns;
     } else if (input.pair !== undefined && input.to === undefined) {
-      const burns = await prisma.burn.findMany({where: {pairId: input.pair}})
+      const burns = await prisma.burn.findMany({where: {pairId: input.pair}, include: {
+        pair: true
+      } })
       return burns;
     } else if (input.pair === undefined && input.to === undefined) {
-      const burns = await prisma.burn.findMany({take: input.first})
+      const burns = await prisma.burn.findMany({take: input.first, include: {
+        pair: true
+      } })
       return burns;
     }
   }

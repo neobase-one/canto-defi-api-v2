@@ -19,14 +19,24 @@ export class SwapResolver {
         orderBy: {
           [input.orderBy.trim()]: od
         },
-        take: input.first 
+        take: input.first,
+        include: {
+          transaction: true,
+          pair: true
+        }
       });
       return swaps;
     } else if (input.pair !== undefined) {
-      const swaps = await prisma.swap.findMany({where: {pairId: input.pair}})
+      const swaps = await prisma.swap.findMany({where: {pairId: input.pair}, include: {
+        transaction: true,
+        pair: true
+      }})
       return swaps;
     } else {
-      const swaps = await prisma.swap.findMany({take: input.first})
+      const swaps = await prisma.swap.findMany({take: input.first, include: {
+        transaction: true,
+        pair: true
+      }})
       return swaps;
     }
   }

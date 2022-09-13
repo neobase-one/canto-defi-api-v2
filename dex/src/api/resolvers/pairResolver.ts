@@ -33,7 +33,8 @@ export class PairsResolver {
         [input.orderBy.trim()]: od
       },
       skip: input.skip,
-      take: input.first 
+      take: input.first,
+      include: {token0: true, token1: true}
     }) 
 
     return pairs;

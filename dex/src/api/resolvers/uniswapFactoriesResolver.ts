@@ -13,6 +13,7 @@ export class UniswapFactoriesResolver {
           id: input.id
         }, 
       });
+      console.log(factories)
       return factories;
     } else {
       const factories = await prisma.stableswapDayData.findMany({
@@ -21,6 +22,8 @@ export class UniswapFactoriesResolver {
           //   block: {lte: input.block}
         }, 
       });
+      console.log(factories)
+      console.log(factories)
       return factories;
     }
   }

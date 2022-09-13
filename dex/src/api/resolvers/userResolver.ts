@@ -12,6 +12,9 @@ export class UsersResolver {
         where: {
           id: input.id,
         }, 
+        include: {
+          liquidityPositions: true
+        }
       });
       return users;
     } else {
@@ -20,6 +23,9 @@ export class UsersResolver {
           id: input.id,
           //   block: {lte: input.block}
         }, 
+        include: {
+          liquidityPositions: true
+        }
       });
       return users;
     }

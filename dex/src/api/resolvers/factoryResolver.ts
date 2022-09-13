@@ -7,7 +7,7 @@ import { StableswapFactory } from "../schema/stableswapFactory";
 export class StableswapFactoryResovler {
   @Query(returns => StableswapFactory)
   async stableswapFactory(@Arg("input") input: StableswapFactoryInput) {
-    const factory = prisma.stableswapDayData.findUnique( {where: {id: input.id}})
+    const factory = await prisma.stableswapFactory.findUnique( {where: {id: input.id}})
     return factory;
   }
 }

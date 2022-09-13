@@ -30,5 +30,5 @@ export class StableswapFactory {
   @Field((type) => BigInt, { nullable: true })
   txCount: BigInt;
 
-  block: Decimal;
+  // block: Decimal;
 }

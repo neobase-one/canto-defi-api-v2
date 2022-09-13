@@ -8,7 +8,11 @@ import { Transaction } from "../schema/transaction";
 export class TransactionsResolver {
   @Query(returns => Transaction)
   async transaction(@Arg("input") input: TransactionInput) {
-    const transaction = prisma.transaction.findUnique( {where: {id: input.id}})
+    const transaction = prisma.transaction.findUnique( {where: {id: input.id}, include: {
+      mints: true,
+      burns: true,
+      swaps: true
+    }})
     return transaction;
   }
   
@@ -25,6 +29,11 @@ export class TransactionsResolver {
         orderBy: {
           [input.orderBy.trim()]: od
         },
+        include: {
+          mints: true,
+          burns: true,
+          swaps: true
+        }
       });
       return transactions
     } else {
@@ -32,7 +41,12 @@ export class TransactionsResolver {
         orderBy: {
           [input.orderBy.trim()]: od
         },
-        take: input.first
+        take: input.first,
+        include: {
+          mints: true,
+          burns: true,
+          swaps: true
+        }
       });
       return transactions
     }

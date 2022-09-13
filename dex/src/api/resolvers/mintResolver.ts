@@ -19,7 +19,11 @@ export class MintResolver {
         orderBy: {
           [input.orderBy.trim()]: od
         },
-        take: input.first 
+        take: input.first,
+        include: {
+          transaction: true,
+          pair: true
+        }
       });
       return mints;
     } else if (input.pair !== undefined && input.to !== undefined) {
