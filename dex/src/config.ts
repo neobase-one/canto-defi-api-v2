@@ -29,7 +29,7 @@ const config = {
   // canto
   canto: {
     blockTime: 5, // in seconds
-    blockLookupWindow: 1000,
+    blockLookupWindow: 100,
     startBlock: 85427,
     pollingDuration: 1, // in seconds
 
