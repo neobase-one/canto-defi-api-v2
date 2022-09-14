@@ -20,6 +20,11 @@ services:
       - DEX_ENDPOINT=${DEX_ENDPOINT}
       - LENDING_ENDPOINT=${LENDING_ENDPOINT}
     command: yarn run api
+    depends_on:
+      - dex-api
+      - lending-api
+    ports:
+      - 8080:8080
 
   dex-indexer:
     build: dex
