@@ -30,7 +30,6 @@ async function indexChain() {
       console.log("polling...")
     }
     const liveBlock = await provider.getBlockNumber();
-
     const bs = await prisma.blockSync.findUniqueOrThrow({
       where: { id: "1" },
       select: { blockNumber: true },

@@ -148,7 +148,7 @@ export async function handleTransfer(log: providers.Log) {
       const currentBurn = await prisma.burn.findFirstOrThrow({
         where: { id: burns[burns.length - 1].id },
       });
-
+      
       if (!currentBurn.needsComplete) {
         await prisma.burn.create({
           data: {
@@ -404,7 +404,7 @@ export async function handleMint(log: providers.Log) {
     event.args.amount1,
     Number(token1.decimals)
   );
-
+  
   // get new amount of USD and NOTE for tracking
   const bundle = await prisma.bundle.findFirstOrThrow({
     where: { id: "1" },
@@ -571,7 +571,7 @@ export async function handleSwap(log: any) {
   // totals for volume updates
   let amount0Total = amount0Out.plus(amount0In);
   let amount1Total = amount1Out.plus(amount1In);
-
+  
   // get new amount of USD and NOTE for tracking
   const bundle = await prisma.bundle.findFirstOrThrow({
     where: { id: "1" },

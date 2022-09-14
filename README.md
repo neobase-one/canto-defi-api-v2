@@ -29,3 +29,15 @@ __NOTE__: `16.10` for api-gateway
 
 - docker-compose
 - nginx - https
+
+
+## Deployment
+
+1. Db Migration in `dex` and `lending`
+  ```
+  prisma migrate deploy
+  ```
+2. Run docker-compose
+  ```
+  docker compose up -d
+  ```

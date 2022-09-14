@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model BlockSyncLending {
+  // contract name
+  id String @id
+
+  // block till which its synced
+  blockSynced Int
+}
+
+model Account {
+  //account address
+  id                    String   @id
+  //list of tokens held by account
+  tokens                String[] @default([])
+  countLiquidated       Decimal  @default(0)
+  liquidityTokenBalance Decimal  @default(0)
+  countLiquidator       Decimal  @default(0)
+  hasBorrowed           Boolean  @default(false)
+}
+
+model AccountCToken {
+  //account address
+  id                      String    @id
+  market                  String
+  symbol                  String
+  account                 String
+  transactionHashes       String[]  @default([])
+  transactionTimes        Decimal[] @default([])
+  accrualBlockNumber      Decimal   @default(0)
+  enteredMarket           Boolean   @default(false)
+  cTokenBalance           Decimal   @default(0)
+  totalUnderlyingSupplied Decimal   @default(0)
+  totalUnderlyingRedeemed Decimal   @default(0)
+  accountBorrowIndex      Decimal   @default(0)
+  totalUnderlyingBorrowed Decimal   @default(0)
+  totalUnderlyingRepaid   Decimal   @default(0)
+  storedBorrowBalance     Decimal   @default(0)
+}
+
+model Comptroller {
+  //account address
+  id                   String  @id
+  //oracle address
+  priceOracle          String
+  closeFactor          Decimal @default(0)
+  liquidationIncentive Decimal @default(0)
+  maxAssets            Decimal @default(0)
+}
+
+model Market {
+  //account address
+  id                       String  @id
+  // market fields
+  name                     String
+  symbol                   String
+  accrualBlockNumber       Decimal @default(0)
+  totalSupply              Decimal @default(0)
+  exchangeRate             Decimal @default(0)
+  totalReserves            Decimal @default(0)
+  totalCash                Decimal @default(0)
+  totalDeposits            Decimal @default(0)
+  totalBorrows             Decimal @default(0)
+  perBlockBorrowInterest   Decimal @default(0)
+  perBlockSupplyInterest   Decimal @default(0)
+  borrowIndex              Decimal @default(0)
+  tokenPerNoteRatio        Decimal @default(0)
+  tokenPerUSDRatio         Decimal @default(0)
+  borrowRate               Decimal @default(0)
+  cash                     Decimal @default(0)
+  collateralFactor         Decimal @default(0)
+  interestRateModelAddress String  @default("0x0000000000000000000000000000000000000000")
+  numberOfBorrowers        Decimal @default(0)
+  numberOfSuppliers        Decimal @default(0)
+  reserves                 Decimal @default(0)
+  supplyRate               Decimal @default(0)
+  underlyingAddress        String  @default("0x0000000000000000000000000000000000000000")
+  underlyingName           String
+  underlyingPrice          Decimal @default(0)
+  underlyingSymbol         String
+  blockTimestamp           Decimal @default(0)
+  reserveFactor            Decimal @default(0)
+  underlyingPriceUSD       Decimal @default(0)
+  underlyingDecimals       Decimal @default(0)
+}

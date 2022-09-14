@@ -3,38 +3,60 @@ version: '3.9'
 
 services:
   # only for dev
-  postgres:
-    image: postgres:14
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=db
-    volumes:
-      - db-data:/var/lib/postgresql/data/
+  # postgres:
+  #   image: postgres:14
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     - POSTGRES_USER=admin
+  #     - POSTGRES_PASSWORD=admin
+  #     - POSTGRES_DB=db
+  #   volumes:
+  #     - db-data:/var/lib/postgresql/data/
 
-  # apollo-gateway:
+  apollo-gateway:
+    build: api-gateway
+    environment:
+      - DEX_ENDPOINT=${DEX_ENDPOINT}
+      - LENDING_ENDPOINT=${LENDING_ENDPOINT}
+    command: yarn run api
+    depends_on:
+      - dex-api
+      - lending-api
+    ports:
+      - 8080:8080
 
   dex-indexer:
     build: dex
     environment:
-      - DATABASE_URL=postgres://admin:admin@postgres:5432/db
-      - RPC_URL=ws://3.111.45.9:8546
+      - DATABASE_URL=${DEX_DATABASE_URL}
+      - RPC_URL=${RPC_URL}
     command: yarn run indexer
 
   dex-api:
     build: dex
     environment:
-      - DATABASE_URL=postgres://admin:admin@postgres:5432/db
-      - RPC_URL=ws://3.111.45.9:8546
+      - DATABASE_URL=${DEX_DATABASE_URL}
+      - RPC_URL=${RPC_URL}
     command: yarn run api
     ports:
       - 8080:8080
 
-  # lending-indexer:
+  lending-indexer:
+    build: lending
+    environment:
+      - DATABASE_URL=${LENDING_DATABASE_URL}
+      - RPC_URL=${RPC_URL}
+    command: yarn run indexer
 
-  # lending-api:
+  lending-api:
+    build: lending
+    environment:
+      - DATABASE_URL=${LENDING_DATABASE_URL}
+      - RPC_URL=${RPC_URL}
+    command: yarn run api
+    ports:
+      - 8080:8080
 
-volumes:
-  db-data:
+# volumes:
+#   db-data:
