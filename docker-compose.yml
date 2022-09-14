@@ -24,14 +24,14 @@ services:
   dex-indexer:
     build: dex
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=${DEX_DATABASE_URL}
       - RPC_URL=${RPC_URL}
     command: yarn run indexer
 
   dex-api:
     build: dex
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=${DEX_DATABASE_URL}
       - RPC_URL=${RPC_URL}
     command: yarn run api
     ports:
@@ -40,14 +40,14 @@ services:
   lending-indexer:
     build: lending
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=${LENDING_DATABASE_URL}
       - RPC_URL=${RPC_URL}
     command: yarn run indexer
 
   lending-api:
     build: lending
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=${LENDING_DATABASE_URL}
       - RPC_URL=${RPC_URL}
     command: yarn run api
     ports:
