@@ -22,3 +22,5 @@ export const SECONDS_IN_DAY = 24 * 60 * 60;
 export const SECONDS_IN_DAY_PD = new Prisma.Decimal(SECONDS_IN_DAY);
 export const DAYS_IN_YEAR = 365;
 export const DAYS_IN_YEAR_PD = new Prisma.Decimal(DAYS_IN_YEAR);
+
+export const MAX_BLOCK_WINDOW_SIZE = Config.canto.BLOCK_LOOKUP_WINDOW;
