@@ -11,13 +11,13 @@ export class Mint {
   id: string;
 
   @Field((type) => Transaction)
-  transaction: Transaction; // todo: Ref conversion
+  transaction: Transaction;
 
   @Field((type) => BigInt)
   timestamp: BigInt;
 
   @Field((type) => Pair)
-  pair: Pair; // todo: Ref conversion
+  pair: Pair;
 
   @Field((type) => DecimalScalar)
   liquidity: Decimal;

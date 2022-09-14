@@ -148,21 +148,21 @@ input PairInput {
 }
 
 type Query {
+  bundles(input: BundlesInput!): [Bundle!]!
   burns(input: BurnsInput!): [Burn!]!
-  getBundles(input: BundlesInput!): [Bundle!]!
   getPairs(input: PairInput!): [Pair!]!
   health: Health!
   liquidityPositionSnapshots(input: LiquidityPositionSnapshotsInput!): [LiquidityPositionSnapshot!]!
   liquidityPositions(input: LiquidityPositionsInput!): [LiquidityPosition!]!
   mints(input: MintsInput!): [Mint!]!
+  stableswapFactories(input: StableswapFactoriesInput!): [StableswapFactory!]!
   stableswapFactory(input: StableswapFactoryInput!): StableswapFactory!
   swaps(input: SwapsInput!): [Swap!]!
   tokenDayDatas(input: TokenDayDatasInput!): [TokenDayData!]!
   tokens(input: TokenInput!): [Token!]!
   transaction(input: TransactionInput!): Transaction!
   transactions(input: TransactionsInput!): [Transaction!]!
-  uniswapDayDatas(input: UniswapDayDatasInput!): [StableswapDayData!]!
-  uniswapFactories(input: UniswapFactoriesInput!): [StableswapFactory!]!
+  uniswapDayDatas(input: StableswapDayDatasInput!): [StableswapDayData!]!
   users(input: UsersInput!): [User!]!
 }
 
@@ -177,6 +177,19 @@ type StableswapDayData {
   totalVolumeNOTE: Decimal
   totalVolumeUSD: Decimal
   txCount: BigInt
+}
+
+input StableswapDayDatasInput {
+  first: Int = 5
+  orderBy: String = "date"
+  orderDirection: String = "ASC"
+  skip: Int = 0
+  startTime: Int!
+}
+
+input StableswapFactoriesInput {
+  block: Float
+  id: String!
 }
 
 type StableswapFactory {
@@ -282,19 +295,6 @@ input TransactionsInput {
   id: [String!]
   orderBy: String = "timestamp"
   orderDirection: String = "ASC"
-}
-
-input UniswapDayDatasInput {
-  first: Int = 5
-  orderBy: String = "date"
-  orderDirection: String = "ASC"
-  skip: Int = 0
-  startTime: Int!
-}
-
-input UniswapFactoriesInput {
-  block: Float
-  id: String!
 }
 
 type User {

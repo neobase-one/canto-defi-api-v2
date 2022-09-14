@@ -11,13 +11,13 @@ export class Swap {
   id: string;
 
   @Field((type) => Transaction)
-  transaction: Transaction; // todo: Ref
+  transaction: Transaction;
 
   @Field((type) => BigInt)
   timestamp: BigInt;
 
   @Field((type) => Pair)
-  pair: Pair; // todo: Ref
+  pair: Pair;
 
   @Field((type) => DecimalScalar)
   liquidity: Decimal;
@@ -40,7 +40,6 @@ export class Swap {
   @Field((type) => DecimalScalar)
   amountUSD: Decimal;
 
-  // todo: transaction, pair - ref; to, sender, from - Bytes
   @Field((type) => String)
   to: string;
 

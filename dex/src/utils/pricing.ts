@@ -101,10 +101,10 @@ export async function getTrackedLiquidityUSD(
   const bundle = await prisma.bundle.findFirstOrThrow({
     where: { id: "1" },
   });
-  // let price0 = token0.derivedNOTE.times(bundle.notePrice);
-  let price0 = token0.derivedNOTE;
-  // let price1 = token1.derivedNOTE.times(bundle.notePrice);
-  let price1 = token1.derivedNOTE;
+  let price0 = token0.derivedNOTE.times(bundle.notePrice);
+  // let price0 = token0.derivedNOTE;
+  let price1 = token1.derivedNOTE.times(bundle.notePrice);
+  // let price1 = token1.derivedNOTE;
 
   // both are whitelist tokens, take average of both amounts
   if (WHITELIST.includes(token0.id) && WHITELIST.includes(token1.id)) {
@@ -142,10 +142,10 @@ export async function getTrackedVolumeUSD(
     where: { id: "1" },
   });
 
-  // let price0 = token0.derivedNOTE.times(bundle.notePrice));
-  let price0 = token0.derivedNOTE;
-  // let price1 = token1.derivedNOTE.times(bundle.notePrice);
-  let price1 = token1.derivedNOTE;
+  let price0 = token0.derivedNOTE.times(bundle.notePrice);
+  // let price0 = token0.derivedNOTE;
+  let price1 = token1.derivedNOTE.times(bundle.notePrice);
+  // let price1 = token1.derivedNOTE;
 
   // dont count tracked volume on these pairs - usually rebass tokens
   if (UNTRACKED_PAIRS.includes(pair.id)) {

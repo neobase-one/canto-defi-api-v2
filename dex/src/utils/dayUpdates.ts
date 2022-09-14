@@ -134,20 +134,20 @@ export async function updateTokenDayData(token: Token, event: providers.Log) {
       id: tokenDayId,
       date: dayStartTimestamp,
       tokenId: token.id,
-      // priceUSD: token.derivedNOTE.times(bundle.notePrice),
-      priceUSD: token.derivedNOTE,
+      priceUSD: token.derivedNOTE.times(bundle.notePrice),
+      // priceUSD: token.derivedNOTE,
       totalLiquidityToken: token.totalLiquidity,
       totalLiquidityNOTE: token.totalLiquidity.times(token.derivedNOTE),
-      // totalLiquidityUSD: token.totalLiquidity.times(token.derivedNOTE).times(bundle.notePrice)
-      totalLiquidityUSD: token.totalLiquidity.times(token.derivedNOTE),
+      totalLiquidityUSD: token.totalLiquidity.times(token.derivedNOTE).times(bundle.notePrice),
+      // totalLiquidityUSD: token.totalLiquidity.times(token.derivedNOTE),
       dailyTxns: 1,
     },
     update: {
       priceUSD: token.derivedNOTE,
       totalLiquidityToken: token.totalLiquidity,
       totalLiquidityNOTE: token.totalLiquidity.times(token.derivedNOTE),
-      // totalLiquidityUSD: token.totalLiquidity.times(token.derivedNOTE).times(bundle.notePrice)
-      totalLiquidityUSD: token.totalLiquidity.times(token.derivedNOTE),
+      totalLiquidityUSD: token.totalLiquidity.times(token.derivedNOTE).times(bundle.notePrice),
+      // totalLiquidityUSD: token.totalLiquidity.times(token.derivedNOTE),
       dailyTxns: { increment: 1 },
     },
   });

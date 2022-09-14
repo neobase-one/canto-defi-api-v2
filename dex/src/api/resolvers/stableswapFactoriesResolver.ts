@@ -1,14 +1,14 @@
 import { Arg, Query, Resolver } from "type-graphql";
 import prisma from "../../prisma";
-import { UniswapFactoriesInput } from "../schema/input";
+import { StableswapFactoriesInput } from "../schema/input";
 import { StableswapFactory } from "../schema/stableswapFactory";
 
 @Resolver()
-export class UniswapFactoriesResolver {
+export class StableswapFactoriesResolver {
   @Query(returns => [StableswapFactory])
-  async uniswapFactories(@Arg("input") input: UniswapFactoriesInput) {
+  async stableswapFactories(@Arg("input") input: StableswapFactoriesInput) {
     if (input.block === undefined) {
-      const factories = await prisma.stableswapDayData.findMany({
+      const factories = await prisma.stableswapFactory.findMany({
         where: {
           id: input.id
         }, 
@@ -16,7 +16,7 @@ export class UniswapFactoriesResolver {
       console.log(factories)
       return factories;
     } else {
-      const factories = await prisma.stableswapDayData.findMany({
+      const factories = await prisma.stableswapFactory.findMany({
         where: {
           id: input.id,
           //   block: {lte: input.block}

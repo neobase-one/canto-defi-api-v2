@@ -6,7 +6,7 @@ import { BundlesInput } from "../schema/input";
 @Resolver()
 export class BundlesResolver {
     @Query(returns => [Bundle])
-    async getBundles(@Arg("input") input: BundlesInput) {
+    async bundles(@Arg("input") input: BundlesInput) {
         const bundle = prisma.bundle.findUnique( {where: {id: input.id}})
         return bundle;
     }

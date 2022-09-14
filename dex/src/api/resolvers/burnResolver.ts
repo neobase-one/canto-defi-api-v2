@@ -21,23 +21,27 @@ export class BurnResolver {
         },
         take: input.first,
         include: {
-          pair: true
+          pair: true,
+          transaction: true
         } 
       });
       return burns;
     } else if (input.pair !== undefined && input.to !== undefined) {
       const burns = await prisma.burn.findMany({where: {to: input.to, pairId: input.pair}, include: {
-        pair: true
+        pair: true,
+        transaction: true
       } })
       return burns;
     } else if (input.pair !== undefined && input.to === undefined) {
       const burns = await prisma.burn.findMany({where: {pairId: input.pair}, include: {
-        pair: true
+        pair: true,
+        transaction: true
       } })
       return burns;
     } else if (input.pair === undefined && input.to === undefined) {
       const burns = await prisma.burn.findMany({take: input.first, include: {
-        pair: true
+        pair: true,
+        transaction: true
       } })
       return burns;
     }

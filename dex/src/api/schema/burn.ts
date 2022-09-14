@@ -11,13 +11,13 @@ export class Burn {
   id: string;
 
   @Field((type) => Transaction)
-  transaction: string; // todo: Ref
+  transaction: Transaction;
 
   @Field((type) => BigInt)
   timestamp: BigInt;
 
   @Field((type) => Pair)
-  pair: Pair; // todo: Ref
+  pair: Pair;
 
   @Field((type) => DecimalScalar)
   liquidity: Decimal;
@@ -40,7 +40,6 @@ export class Burn {
   @Field((type) => Boolean)
   needsComplete: Boolean;
 
-  // todo: to, sender, feeTo - Bytes
   @Field((type) => String)
   to: string;
 

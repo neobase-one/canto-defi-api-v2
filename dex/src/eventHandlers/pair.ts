@@ -317,11 +317,11 @@ export async function handleSync(log: any) {
     token1
   );
   if (!bundle.notePrice.equals(ZERO_BD)) {
-    // trackedLiquidityNOTE = trackedLiquidityUSD.div(bundle.notePrice);
-    trackedLiquidityNOTE = trackedLiquidityUSD;
+    trackedLiquidityNOTE = trackedLiquidityUSD.div(bundle.notePrice);
+    // trackedLiquidityNOTE = trackedLiquidityUSD;
   } else {
-    // trackedLiquidityNOTE = ZERO_BD;
-    trackedLiquidityNOTE = trackedLiquidityUSD;
+    trackedLiquidityNOTE = ZERO_BD;
+    // trackedLiquidityNOTE = trackedLiquidityUSD;
   }
 
   pair = await prisma.pair.update({
@@ -331,8 +331,8 @@ export async function handleSync(log: any) {
       reserveNOTE: pair.reserve0
         .times(token0.derivedNOTE)
         .plus(pair.reserve1.times(token1.derivedNOTE)),
-      // reserveUSD: pair.reserveUSD.times(bundle.notePrice)
-      reserveUSD: pair.reserveUSD,
+      reserveUSD: pair.reserveUSD.times(bundle.notePrice)
+      // reserveUSD: pair.reserveUSD,
     },
   });
 
@@ -350,8 +350,8 @@ export async function handleSync(log: any) {
       id: config.canto.contracts.baseV1Factory.addresses[0],
     },
     data: {
-      // totalLiquidityUSD: factory.totalLiquidityNOTE.times(bundle.notePrice),
-      totalLiquidityUSD: factory.totalLiquidityNOTE,
+      totalLiquidityUSD: factory.totalLiquidityNOTE.times(bundle.notePrice),
+      // totalLiquidityUSD: factory.totalLiquidityNOTE,
     },
   });
 
@@ -412,8 +412,8 @@ export async function handleMint(log: providers.Log) {
   let amountTotalNOTE = token1.derivedNOTE
     .times(token1Amount)
     .plus(token0.derivedNOTE.times(token0Amount));
-  // let amountTotalUSD = amountTotalNOTE.times(bundle.notePrice);
-  let amountTotalUSD = amountTotalNOTE;
+  let amountTotalUSD = amountTotalNOTE.times(bundle.notePrice);
+  // let amountTotalUSD = amountTotalNOTE;
 
   // update txn counts
   await prisma.pair.update({
@@ -498,8 +498,8 @@ export async function handleBurn(log: any) {
   let amountTotalNOTE = token1.derivedNOTE
     .times(token1Amount)
     .plus(token0.derivedNOTE.times(token0Amount));
-  // let amountTotalUSD = amountTotalNOTE.times(bundle.notePrice);
-  let amountTotalUSD = amountTotalNOTE;
+  let amountTotalUSD = amountTotalNOTE.times(bundle.notePrice);
+  // let amountTotalUSD = amountTotalNOTE;
 
   // update txn counts
   await prisma.pair.update({
@@ -583,8 +583,8 @@ export async function handleSwap(log: any) {
     .plus(token0.derivedNOTE.times(amount0Total))
     .div(new Decimal("2"));
 
-  // let derivedAmountUSD = derivedAmountNOTE.times(bundle.notePrice);
-  let derivedAmountUSD = derivedAmountNOTE;
+  let derivedAmountUSD = derivedAmountNOTE.times(bundle.notePrice);
+  // let derivedAmountUSD = derivedAmountNOTE;
 
   // only accounts for volume through white listed tokens
   let trackedAmountUSD = await getTrackedVolumeUSD(
@@ -598,11 +598,11 @@ export async function handleSwap(log: any) {
   let trackedAmountNOTE: Decimal = trackedAmountUSD;
 
   if (bundle.notePrice.equals(ZERO_BD)) {
-    // trackedAmountNOTE = ZERO_BD;
-    trackedAmountNOTE = trackedAmountUSD;
+    trackedAmountNOTE = ZERO_BD;
+    // trackedAmountNOTE = trackedAmountUSD;
   } else {
-    // trackedAmountNOTE = trackedAmountUSD.div(bundle.notePrice);
-    trackedAmountNOTE = trackedAmountUSD;
+    trackedAmountNOTE = trackedAmountUSD.div(bundle.notePrice);
+    // trackedAmountNOTE = trackedAmountUSD;
   }
 
   // update token0 global volume and token liquidity stats
@@ -737,8 +737,8 @@ export async function handleSwap(log: any) {
     data: {
       dailyVolumeToken: { increment: amount0Total },
       dailyVolumeNOTE: { increment: amount0Total.times(token0.derivedNOTE) },
-      // dailyVolumeUSD: {increment: amount0Total.times(token0.derivedNOTE).times(bundle.notePrice)},
-      dailyVolumeUSD: { increment: amount0Total.times(token0.derivedNOTE) },
+      dailyVolumeUSD: {increment: amount0Total.times(token0.derivedNOTE).times(bundle.notePrice)},
+      // dailyVolumeUSD: { increment: amount0Total.times(token0.derivedNOTE) },
     },
   });
 
@@ -748,8 +748,8 @@ export async function handleSwap(log: any) {
     data: {
       dailyVolumeToken: { increment: amount1Total },
       dailyVolumeNOTE: { increment: amount1Total.times(token1.derivedNOTE) },
-      // dailyVolumeUSD: {increment: amount1Total.times(token1.derivedNOTE).times(bundle.notePrice)},
-      dailyVolumeUSD: { increment: amount1Total.times(token1.derivedNOTE) },
+      dailyVolumeUSD: {increment: amount1Total.times(token1.derivedNOTE).times(bundle.notePrice)},
+      // dailyVolumeUSD: { increment: amount1Total.times(token1.derivedNOTE) },
     },
   });
 }

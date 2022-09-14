@@ -36,15 +36,16 @@ export class TokenDayDatasInput {
 }
 
 @InputType()
-export class UniswapFactoriesInput {
+export class StableswapFactoriesInput {
   @Field({ nullable: false })
   id: string
 
   @Field({ nullable: true })
   block: number
 }
+
 @InputType()
-export class UniswapDayDatasInput {
+export class StableswapDayDatasInput {
   @Field((type) => Int, { nullable: false })
   startTime: number
 
@@ -269,18 +270,6 @@ export class BundlesInput {
 export class StableswapDayDataInput {
   @Field({ nullable: false })
   id: string
-}
-
-@InputType()
-export class StableswapDayDatasInput {
-  @Field({ nullable: true })
-  startTime: number
-  @Field({ nullable: true })
-  orderBy: string
-  @Field({ nullable: true })
-  orderDirection: OrderDirection
-  @Field({ nullable: true })
-  date_gt: number
 }
 
 @InputType()

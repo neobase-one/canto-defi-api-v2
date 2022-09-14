@@ -11,8 +11,8 @@ import { SwapResolver } from "./swapResolver";
 import { TokenDayDatasResolver } from "./tddResolver";
 import { TokensResolver } from "./tokenResolver";
 import { TransactionsResolver } from "./transactionResolver";
-import { UniswapDayDatasResolver } from "./uddResolver";
-import { UniswapFactoriesResolver } from "./uniswapFactoriesResolver";
+import { StableswapDayDatasResolver } from "./sddResolver";
+import { StableswapFactoriesResolver } from "./stableswapFactoriesResolver";
 import { UsersResolver } from "./userResolver";
 import 'reflect-metadata';
 
@@ -29,7 +29,7 @@ export const resolvers: [Function, ...Function[]] = [
   TokenDayDatasResolver,
   TokensResolver,
   TransactionsResolver,
-  UniswapDayDatasResolver,
-  UniswapFactoriesResolver,
+  StableswapDayDatasResolver,
+  StableswapFactoriesResolver,
   UsersResolver
 ];
