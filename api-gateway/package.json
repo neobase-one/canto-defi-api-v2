@@ -4,10 +4,10 @@
   "description": "",
   "main": "src/server.js",
   "scripts": {
-    "build": "rimraf ./build && tsc",
-    "redo": "rimraf ./build && tsc && node build/src/server.js",
+    "build": "rimraf ./build",
+    "redo": "rimraf ./build && node src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "api": "rimraf ./build && tsc && node build/src/server.js"
+    "api": "rimraf ./build && node src/server.js"
   },
   "dependencies": {
     "@apollo/gateway": "^2.1.1",
