@@ -1,9 +1,17 @@
 -- CreateTable
-CREATE TABLE "BlockSync" (
+CREATE TABLE "IndexerInfo" (
     "id" TEXT NOT NULL,
-    "blockNumber" INTEGER NOT NULL,
+    "latestBlock" INTEGER NOT NULL,
 
-    CONSTRAINT "BlockSync_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "IndexerInfo_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Block" (
+    "number" INTEGER NOT NULL,
+    "timestamp" BIGINT NOT NULL,
+
+    CONSTRAINT "Block_pkey" PRIMARY KEY ("number")
 );
 
 -- CreateTable
