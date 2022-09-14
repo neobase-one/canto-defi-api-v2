@@ -8,6 +8,17 @@ import "reflect-metadata";
 async function init() {
   await prisma.blockSyncLending.upsert({
     where: {
+      id: "Lending",
+    },
+    update: {},
+    create: {
+      id: "Lending",
+      blockSynced: Config.canto.contracts.comptroller.startBlock,
+    },
+  });
+
+  await prisma.blockSyncLending.upsert({
+    where: {
       id: "Comptroller",
     },
     update: {},

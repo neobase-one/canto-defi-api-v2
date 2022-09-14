@@ -11,23 +11,28 @@ import {
 import prisma from "../prisma";
 import provider from "../provider";
 
-export async function indexCTokenEvents() {
-  // while (1) {
+export async function indexCTokenEvents(start: number, end: number) {
   const bs = await prisma.blockSyncLending.findUniqueOrThrow({
     where: { id: "CToken" },
     select: { blockSynced: true },
   });
+
+  if (bs.blockSynced > start) {
+    return;
+  }
+
+  // get logs
   const logs = await provider.send("eth_getLogs", [
     {
-      fromBlock: "0x" + bs.blockSynced.toString(16),
-      toBlock:
-        "0x" + (bs.blockSynced + Config.canto.blockLookupWindow).toString(16),
+      fromBlock: "0x" + start.toString(16),
+      toBlock: "0x" + end.toString(16),
       topics: [Object.values(Config.canto.contracts.cToken.topics)],
       address: Config.canto.contracts.cToken.addresses,
     },
   ]);
 
-  console.log(bs.blockSynced, logs.length);
+  // process logs
+  console.log("CToken", start, end, logs.length);
   for (let log of logs) {
     switch (log.topics[0]) {
       case Config.canto.contracts.cToken.topics.Borrow: {
@@ -72,7 +77,7 @@ export async function indexCTokenEvents() {
 
   await prisma.blockSyncLending.update({
     where: { id: "CToken" },
-    data: { blockSynced: bs.blockSynced + Config.canto.blockLookupWindow },
+    data: { blockSynced: end },
   });
   // }
   // console.log("sync complete: CToken");

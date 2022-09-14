@@ -31,7 +31,8 @@ export const Config = {
   // canto
   canto: {
     BLOCK_TIME: 5, // in seconds
-    blockLookupWindow: 300,
+    BLOCK_LOOKUP_WINDOW: 300,
+    pollingDuration: 5, // in seconds
     // lending dash needs all these
     lendingDashboard: {
       USDC_ADDRESS: "0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd",
