@@ -7,17 +7,17 @@ import {indexPairEvents} from "./pair"
 import {indexFactoryEvents} from "./factory"
 
 async function init() {
-  await prisma.blockSync.upsert({
+  await prisma.indexerInfo.upsert({
     where: {
       id: "1",
     },
     update: {
       // id: "1",
-      // blockNumber: config.canto.startBlock,
+      // latestBlock: config.canto.startBlock,
     },
     create: {
       id: "1",
-      blockNumber: config.canto.startBlock,
+      latestBlock: config.canto.startBlock,
     },
   });
 }
@@ -31,12 +31,12 @@ async function indexChain() {
     }
     const liveBlock = await provider.getBlockNumber();
 
-    const bs = await prisma.blockSync.findUniqueOrThrow({
+    const bs = await prisma.indexerInfo.findUniqueOrThrow({
       where: { id: "1" },
-      select: { blockNumber: true },
+      select: { latestBlock: true },
     });
 
-    const from = bs.blockNumber;
+    const from = bs.latestBlock;
     const to = Math.min(from + config.canto.blockLookupWindow, liveBlock);
     console.log(`syncing block: ${from} to ${to}`);
 
@@ -50,9 +50,9 @@ async function indexChain() {
       // exit()
     }
 
-    await prisma.blockSync.update({
+    await prisma.indexerInfo.update({
       where: { id: "1" },
-      data: { blockNumber: to },
+      data: { latestBlock: to },
     });
   }
   console.log("sync complete");

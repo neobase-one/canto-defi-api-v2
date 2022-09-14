@@ -10,11 +10,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model BlockSync {
+model IndexerInfo {
   id String @id
 
   // block till which its synced
-  blockNumber Int
+  latestBlock Int
+}
+
+model Block {
+  number Int @id
+  timestamp BigInt
 }
 
 model StableswapFactory {

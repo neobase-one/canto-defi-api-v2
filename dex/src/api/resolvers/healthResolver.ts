@@ -12,8 +12,8 @@ export class HealthResolver {
     const chainHeadTimestamp = await getBlockTimestamp(chainHeadBlockNumber)
 
     // latest indexed block
-    const latestBlock = await prisma.blockSync.findFirstOrThrow({where: {id: '1'}})
-    const latestIndexedBlockNumber = latestBlock.blockNumber;
+    const info = await prisma.indexerInfo.findFirstOrThrow({where: {id: '1'}})
+    const latestIndexedBlockNumber = info.latestBlock;
     const latestIndexedBlockTimestamp = await getBlockTimestamp(latestIndexedBlockNumber);
 
     // sync
