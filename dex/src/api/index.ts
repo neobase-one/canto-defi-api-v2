@@ -1,6 +1,6 @@
+import "reflect-metadata"
 import express from "express";
 import apolloLoader from "./apollo";
-import "reflect-metadata"
 import config from "../config"
 
 async function main(){

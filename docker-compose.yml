@@ -3,16 +3,16 @@ version: '3.9'
 
 services:
   # only for dev
-  # postgres:
-  #   image: postgres:14
-  #   ports:
-  #     - "5432:5432"
-  #   environment:
-  #     - POSTGRES_USER=admin
-  #     - POSTGRES_PASSWORD=admin
-  #     - POSTGRES_DB=db
-  #   volumes:
-  #     - db-data:/var/lib/postgresql/data/
+  postgres:
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=db
+    volumes:
+      - db-data:/var/lib/postgresql/data/
 
   apollo-gateway:
     build: api-gateway
@@ -28,14 +28,14 @@ services:
       - RPC_URL=${RPC_URL}
     command: yarn run indexer
 
-  # dex-api:
-  #   build: dex
-  #   environment:
-  #     - DATABASE_URL=${DATABASE_URL}
-  #     - RPC_URL=${RPC_URL}
-  #   command: yarn run api
-  #   ports:
-  #     - 8080:8080
+  dex-api:
+    build: dex
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - RPC_URL=${RPC_URL}
+    command: yarn run api
+    ports:
+      - 8080:8080
 
   lending-indexer:
     build: lending
@@ -53,5 +53,5 @@ services:
     ports:
       - 8080:8080
 
-# volumes:
-#   db-data:
+volumes:
+  db-data:

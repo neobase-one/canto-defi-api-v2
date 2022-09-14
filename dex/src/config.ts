@@ -29,8 +29,9 @@ const config = {
   // canto
   canto: {
     blockTime: 5, // in seconds
-    blockLookupWindow: 1000,
+    blockLookupWindow: 200,
     startBlock: 85427,
+    pollingDuration: 1, // in seconds
 
     MINIMUM_LIQUIDITY_THRESHOLD_ETH: new Decimal("2"),
     MINIMUM_USD_THRESHOLD_NEW_PAIRS: new Decimal("400000"),

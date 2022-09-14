@@ -26,14 +26,14 @@ model StableswapFactory {
 
   // total volume
   totalVolumeUSD  Decimal @default(0)
-  totalVolumeETH  Decimal @default(0)
+  totalVolumeNOTE Decimal @default(0)
 
   // untracked values - less confident USD scores
   untrackedVolumeUSD Decimal @default(0)
 
   // total liquidity
-  totalLiquidityUSD Decimal @default(0)
-  totalLiquidityETH Decimal @default(0)
+  totalLiquidityUSD  Decimal @default(0)
+  totalLiquidityNOTE Decimal @default(0)
 
   // transactions
   txCount BigInt @default(0)
@@ -63,7 +63,7 @@ model Token {
   totalLiquidity Decimal @default(0)
 
   // derived prices
-  derivedETH Decimal @default(0)
+  derivedNOTE Decimal @default(0)
 
   // derived fields
   tokenDayData     TokenDayData[]
@@ -87,11 +87,11 @@ model Pair {
   totalSupply Decimal @default(0)
 
   // derived liquidity
-  reserveETH Decimal @default(0)
-  reserveUSD Decimal @default(0)
+  reserveNOTE Decimal @default(0)
+  reserveUSD  Decimal @default(0)
 
   // used for separating per pair reserves and global
-  trackedReserveETH Decimal @default(0)
+  trackedReserveNOTE Decimal @default(0)
 
   // Price in terms of the asset pair
   token0Price Decimal @default(0)
@@ -102,7 +102,7 @@ model Pair {
   volumeToken1       Decimal @default(0)
   volumeUSD          Decimal @default(0)
   untrackedVolumeUSD Decimal @default(0)
-  txCount            BigInt @default(0)
+  txCount            BigInt  @default(0)
 
   // creation stats
   createdAtTimestamp   BigInt
@@ -124,7 +124,7 @@ model User {
   id                        String                      @id
   liquidityPositions        LiquidityPosition[]
   LiquidityPositionSnapshot LiquidityPositionSnapshot[]
-  usdSwapped                Decimal @default(0)
+  usdSwapped                Decimal                     @default(0)
 }
 
 model LiquidityPosition {
@@ -248,8 +248,8 @@ model Swap {
 
 // stores for USD calculations
 model Bundle {
-  id       String  @id
-  ethPrice Decimal @default(0)// price of ETH usd 
+  id        String  @id
+  notePrice Decimal @default(0) // price of ETH usd 
 }
 
 // Data accumulated and condensed into day stats for all of Uniswap
@@ -257,14 +257,14 @@ model StableswapDayData {
   id   String @id // timestamp rounded to current day by dividing by 86400
   date Int
 
-  dailyVolumeETH       Decimal @default(0)
+  dailyVolumeNOTE      Decimal @default(0)
   dailyVolumeUSD       Decimal @default(0)
   dailyVolumeUntracked Decimal @default(0)
 
-  totalVolumeETH    Decimal @default(0)
-  totalLiquidityETH Decimal
-  totalVolumeUSD    Decimal @default(0) // Accumulate at each trade, not just calculated off whatever totalVolume is. making it more accurate as it is a live conversion
-  totalLiquidityUSD Decimal
+  totalVolumeNOTE    Decimal @default(0)
+  totalLiquidityNOTE Decimal
+  totalVolumeUSD     Decimal @default(0) // Accumulate at each trade, not just calculated off whatever totalVolume is. making it more accurate as it is a live conversion
+  totalLiquidityUSD  Decimal
 
   txCount BigInt
 }
@@ -289,7 +289,7 @@ model PairHourData {
   hourlyVolumeToken0 Decimal @default(0)
   hourlyVolumeToken1 Decimal @default(0)
   hourlyVolumeUSD    Decimal @default(0)
-  hourlyTxns         BigInt @default(0)
+  hourlyTxns         BigInt  @default(0)
 }
 
 // Data accumulated and condensed into day stats for each exchange
@@ -316,7 +316,7 @@ model PairDayData {
   dailyVolumeToken0 Decimal @default(0)
   dailyVolumeToken1 Decimal @default(0)
   dailyVolumeUSD    Decimal @default(0)
-  dailyTxns         BigInt @default(0)
+  dailyTxns         BigInt  @default(0)
 }
 
 model TokenDayData {
@@ -327,13 +327,13 @@ model TokenDayData {
 
   // volume stats
   dailyVolumeToken Decimal @default(0)
-  dailyVolumeETH   Decimal @default(0)
+  dailyVolumeNOTE  Decimal @default(0)
   dailyVolumeUSD   Decimal @default(0)
-  dailyTxns        BigInt @default(0)
+  dailyTxns        BigInt  @default(0)
 
   // liquidity stats
   totalLiquidityToken Decimal
-  totalLiquidityETH   Decimal
+  totalLiquidityNOTE  Decimal
   totalLiquidityUSD   Decimal @default(0)
 
   // price stats
